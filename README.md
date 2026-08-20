@@ -296,7 +296,7 @@ AppLaunch.storage.importAll(backup);
   "rules": [
     "Prefer vanilla JS/HTML/CSS - no build step",
     "All state in localStorage via AppLaunch.storage",
-    "New pages: include nav-bar, link to live URL",
+    "New pages: include app-core.js (nav injects Hub + phase trail)",
     "Calculators: use AppLaunch.calculator.* methods",
     "Forms: auto-save to localStorage on input",
     "No external API calls in core pages"
@@ -336,9 +336,10 @@ git pull origin main --rebase
 
 ### Adding a New Phase Page
 1. Copy `phases/1-market-mining.html` as template
-2. Update nav links in all pages
+2. Load `../app-core.js` — the Hub + phase trail injects automatically
 3. Add phase-specific templates to `notes.html` TEMPLATES array
 4. Update `resources.html` phase-resources section
+5. Register the page in `SiteNav.pages` inside `app-core.js`
 
 ### Extending the Validator
 ```javascript

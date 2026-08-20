@@ -525,6 +525,251 @@ var LegalGuide = {
   }
 };
 
+// ============ SITE NAVIGATION ============
+// Relative links so Hub/phases work locally, on GitHub Pages, and from file://
+
+var SiteNav = {
+  pages: {
+    home: { file: 'index.html', label: 'Hub' },
+    'quick-start': { file: 'quick-start.html', label: 'Quick Start' },
+    validator: { file: 'validator.html', label: 'Validator' },
+    notes: { file: 'notes.html', label: 'Notes' },
+    calculators: { file: 'calculators.html', label: 'Calculators' },
+    resources: { file: 'resources.html', label: 'Resources' },
+    legal: { file: 'legal.html', label: 'Legal/IP' },
+    prompts: { file: 'prompts.html', label: 'Prompts' },
+    tools: { file: 'tools.html', label: 'Tools' },
+    log: { file: 'execution-log.html', label: 'Log' },
+    'phase-1': { file: 'phases/1-market-mining.html', label: 'Market Mining', short: 'Market', n: 1 },
+    'phase-2': { file: 'phases/2-competitive-analysis.html', label: 'Competitive Analysis', short: 'Compete', n: 2 },
+    'phase-3': { file: 'phases/3-pain-point-validation.html', label: 'Pain Point Validation', short: 'Validate', n: 3 },
+    'phase-4': { file: 'phases/4-build-roadmap.html', label: 'Build Roadmap', short: 'Build', n: 4 }
+  },
+
+  inPhases: function() {
+    return /(?:^|\/)phases\/[^/]*$/.test((location.pathname || '').replace(/\\/g, '/'));
+  },
+
+  href: function(file) {
+    var prefix = this.inPhases() ? '../' : '';
+    if (!file || file === 'index.html') return prefix + 'index.html';
+    if (file.indexOf('phases/') === 0) {
+      return this.inPhases() ? file.slice('phases/'.length) : file;
+    }
+    return prefix + file;
+  },
+
+  currentId: function() {
+    var p = (location.pathname || '').replace(/\\/g, '/');
+    if (/1-market-mining/.test(p)) return 'phase-1';
+    if (/2-competitive-analysis/.test(p)) return 'phase-2';
+    if (/3-pain-point-validation/.test(p)) return 'phase-3';
+    if (/4-build-roadmap/.test(p)) return 'phase-4';
+    if (/quick-start/.test(p)) return 'quick-start';
+    if (/validator/.test(p)) return 'validator';
+    if (/notes/.test(p)) return 'notes';
+    if (/calculators/.test(p)) return 'calculators';
+    if (/resources/.test(p)) return 'resources';
+    if (/legal/.test(p)) return 'legal';
+    if (/prompts/.test(p)) return 'prompts';
+    if (/tools/.test(p)) return 'tools';
+    if (/execution-log/.test(p)) return 'log';
+    return 'home';
+  },
+
+  currentAttr: function(id, current) {
+    return id === current ? ' aria-current="page"' : '';
+  },
+
+  ensureCss: function() {
+    if (document.getElementById('alp-site-css')) return;
+    var src = '';
+    var scripts = document.getElementsByTagName('script');
+    for (var i = 0; i < scripts.length; i++) {
+      var s = scripts[i].src || '';
+      if (s.indexOf('app-core.js') !== -1) {
+        src = s.replace(/app-core\.js.*$/, 'site.css');
+        break;
+      }
+    }
+    if (!src) src = this.inPhases() ? '../site.css' : 'site.css';
+    var link = document.createElement('link');
+    link.id = 'alp-site-css';
+    link.rel = 'stylesheet';
+    link.href = src;
+    document.head.appendChild(link);
+    if (!document.querySelector('link[rel="icon"]')) {
+      var icon = document.createElement('link');
+      icon.rel = 'icon';
+      icon.href = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#4f46e5"/><text x="16" y="22" text-anchor="middle" fill="white" font-size="18">⬡</text></svg>');
+      document.head.appendChild(icon);
+    }
+  },
+
+  mount: function() {
+    if (document.querySelector('.alp-chrome')) return;
+    this.ensureCss();
+    var current = this.currentId();
+    var pages = this.pages;
+    var href = this.href.bind(this);
+    var cur = this.currentAttr;
+
+    var toolIds = ['quick-start', 'validator', 'notes', 'calculators', 'resources'];
+    var moreIds = ['legal', 'prompts', 'tools', 'log'];
+    var phaseIds = ['phase-1', 'phase-2', 'phase-3', 'phase-4'];
+
+    var moreLinks = moreIds.map(function(id) {
+      return '<a href="' + href(pages[id].file) + '"' + cur(id, current) + '>' + pages[id].label + '</a>';
+    }).join('');
+
+    var toolLinks = toolIds.map(function(id) {
+      return '<a href="' + href(pages[id].file) + '"' + cur(id, current) + '>' + pages[id].label + '</a>';
+    }).join('') +
+      '<div class="alp-more">' +
+        '<button type="button" class="alp-more-btn" aria-expanded="false" aria-haspopup="true">More</button>' +
+        '<div class="alp-more-menu">' + moreLinks + '</div>' +
+      '</div>';
+
+    var trail = phaseIds.map(function(id, i) {
+      var p = pages[id];
+      var connector = i < phaseIds.length - 1 ? '<span class="alp-connector" aria-hidden="true"></span>' : '';
+      return '<a href="' + href(p.file) + '"' + cur(id, current) + '>' +
+        '<span class="alp-dot">' + p.n + '</span>' + p.short + '</a>' + connector;
+    }).join('');
+
+    var drawerTools = toolIds.concat(moreIds).map(function(id) {
+      return '<a href="' + href(pages[id].file) + '"' + cur(id, current) + '>' + pages[id].label + '</a>';
+    }).join('');
+
+    var drawerPhases = phaseIds.map(function(id) {
+      var p = pages[id];
+      return '<a href="' + href(p.file) + '"' + cur(id, current) + '>Phase ' + p.n + ': ' + p.label + '</a>';
+    }).join('');
+
+    var chrome = document.createElement('div');
+    chrome.className = 'alp-chrome';
+    chrome.innerHTML =
+      '<a class="alp-skip" href="#alp-main">Skip to content</a>' +
+      '<div class="alp-top">' +
+        '<button type="button" class="alp-menu-btn" aria-expanded="false" aria-controls="alp-drawer" aria-label="Open menu">' +
+          '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' +
+        '</button>' +
+        '<a class="alp-brand" href="' + href('index.html') + '">' +
+          '<span class="alp-mark" aria-hidden="true">⬡</span>' +
+          '<span class="alp-brand-text">AppLaunch Planner<span class="alp-brand-sub">Sherpa for indie apps</span></span>' +
+        '</a>' +
+        '<nav class="alp-primary" aria-label="Toolkit">' + toolLinks + '</nav>' +
+        '<a class="alp-hub" href="' + href('index.html') + '"' + cur('home', current) + '>' +
+          '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 2.2 1.8 7.1h1.7V14h4.1V9.6h2.8V14h4.1V7.1h1.7L8 2.2z"/></svg>' +
+          'Hub</a>' +
+      '</div>' +
+      '<nav class="alp-trail" aria-label="Sherpa phases">' + trail + '</nav>' +
+      '<div id="alp-drawer" class="alp-drawer">' +
+        '<div class="alp-drawer-label">Hub</div>' +
+        '<a href="' + href('index.html') + '"' + cur('home', current) + '>Back to main hub</a>' +
+        '<div class="alp-drawer-label">Sherpa trail</div>' + drawerPhases +
+        '<div class="alp-drawer-label">Toolkit</div>' + drawerTools +
+      '</div>';
+
+    document.body.insertBefore(chrome, document.body.firstChild);
+
+    var main = document.querySelector('main');
+    if (main && !main.id) main.id = 'alp-main';
+    else if (!main) {
+      var marker = document.createElement('div');
+      marker.id = 'alp-main';
+      marker.setAttribute('tabindex', '-1');
+      chrome.insertAdjacentElement('afterend', marker);
+    }
+
+    var btn = chrome.querySelector('.alp-menu-btn');
+    var drawer = chrome.querySelector('#alp-drawer');
+    btn.addEventListener('click', function() {
+      var open = drawer.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+    var moreBtn = chrome.querySelector('.alp-more-btn');
+    var moreMenu = chrome.querySelector('.alp-more-menu');
+    if (moreBtn && moreMenu) {
+      moreBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var open = moreMenu.classList.toggle('open');
+        moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      document.addEventListener('click', function() {
+        moreMenu.classList.remove('open');
+        moreBtn.setAttribute('aria-expanded', 'false');
+      });
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (drawer.classList.contains('open')) {
+          drawer.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+          btn.setAttribute('aria-label', 'Open menu');
+        }
+        if (moreMenu) {
+          moreMenu.classList.remove('open');
+          if (moreBtn) moreBtn.setAttribute('aria-expanded', 'false');
+        }
+      }
+    });
+
+    this.syncOffset(chrome);
+    window.addEventListener('resize', function() { SiteNav.syncOffset(chrome); });
+
+    if (current.indexOf('phase-') === 0) {
+      this.mountPager(current);
+      this.mountCrumb(current);
+    }
+  },
+
+  syncOffset: function(chrome) {
+    var h = chrome.offsetHeight;
+    document.documentElement.style.setProperty('--alp-chrome-h', h + 'px');
+    document.documentElement.style.paddingTop = h + 'px';
+  },
+
+  mountCrumb: function(current) {
+    var page = this.pages[current];
+    if (!document.querySelector('.alp-crumb')) {
+      var crumb = document.createElement('nav');
+      crumb.className = 'alp-crumb';
+      crumb.setAttribute('aria-label', 'Breadcrumb');
+      crumb.innerHTML = '<a href="' + this.href('index.html') + '">Hub</a> / Phase ' + page.n + ': ' + page.label;
+      var host = document.getElementById('alp-main') || document.body;
+      if (host.id === 'alp-main' && host.tagName !== 'MAIN') {
+        host.insertAdjacentElement('afterend', crumb);
+      } else {
+        host.insertBefore(crumb, host.firstChild);
+      }
+    }
+  },
+
+  mountPager: function(current) {
+    if (document.querySelector('.alp-pager')) return;
+    var order = ['phase-1', 'phase-2', 'phase-3', 'phase-4'];
+    var i = order.indexOf(current);
+    var prev = i > 0 ? this.pages[order[i - 1]] : null;
+    var next = i < order.length - 1 ? this.pages[order[i + 1]] : null;
+    var page = this.pages[current];
+    var pager = document.createElement('nav');
+    pager.className = 'alp-pager';
+    pager.setAttribute('aria-label', 'Phase pager');
+    var left = prev
+      ? '<a href="' + this.href(prev.file) + '">← Phase ' + prev.n + '</a>'
+      : '<a class="alp-pager-hub" href="' + this.href('index.html') + '">← Hub</a>';
+    var right = next
+      ? '<a href="' + this.href(next.file) + '">Phase ' + next.n + ': ' + next.short + ' →</a>'
+      : '<a class="alp-pager-hub" href="' + this.href('index.html') + '">Back to Hub →</a>';
+    pager.innerHTML = left +
+      '<div class="alp-pager-meta">Phase ' + page.n + ' of 4 · <a class="alp-pager-hub" href="' + this.href('index.html') + '">Hub</a></div>' +
+      right;
+    document.body.appendChild(pager);
+  }
+};
+
 // Export to global
 window.AppLaunch = {
   storage: new StorageManager(),
@@ -533,14 +778,20 @@ window.AppLaunch = {
   calculator: BusinessCalculator,
   prompts: PromptEngine,
   legal: LegalGuide,
+  nav: SiteNav,
   STORAGE_KEYS: STORAGE_KEYS
 };
 
+SiteNav.ensureCss();
+
 // Auto-initialize
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function() {
-    window.AppLaunch.storage.init();
-  });
-} else {
+function alpBoot() {
+  window.AppLaunch.nav.mount();
   window.AppLaunch.storage.init();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', alpBoot);
+} else {
+  alpBoot();
 }

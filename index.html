@@ -3,203 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>App Launch Planner</title>
+  <title>App Launch Planner — Hub</title>
+  <script src="app-core.js"></script>
   <style>
     * { box-sizing: border-box; }
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; 
-      line-height: 1.6; 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.6;
       color: #1f2937;
-      background: #f9fafb;
+      background: #f8fafc;
+      margin: 0;
     }
-    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-    
-    /* Header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem 2rem;
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-      color: white;
-      border-radius: 12px 12px 0 0;
-      margin-bottom: 2rem;
-    }
-    
-    .header h1 { margin: 0; font-size: 1.5rem; }
-    .header nav a { 
-      color: white; 
-      text-decoration: none; 
-      margin-left: 1.5rem; 
-      font-weight: 500;
-    }
-    .header nav a:hover { text-decoration: underline; }
-    
-    /* Hero */
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
     .hero {
       text-align: center;
-      padding: 3rem 2rem;
+      padding: 2.5rem 1.5rem 2.25rem;
       background: white;
-      border-radius: 0 0 12px 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      margin-bottom: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+      margin-bottom: 1.75rem;
+      border: 1px solid #e5e7eb;
     }
-    
-    .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .hero .subtitle { font-size: 1.2rem; color: #6b7280; }
-    
-    /* Problem Statement */
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4f46e5;
+      background: #eef2ff;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 0.85rem;
+    }
+    .hero h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0 0 0.5rem; letter-spacing: -0.03em; }
+    .hero .subtitle { font-size: 1.1rem; color: #6b7280; max-width: 36rem; margin: 0 auto 1.4rem; }
+    .hero-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 0.7rem 1.15rem;
+      border-radius: 10px;
+    }
+    .btn-primary { background: #4f46e5; color: white; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-ghost { background: #f1f5f9; color: #1e293b; }
+    .btn-ghost:hover { background: #e2e8f0; }
+
     .problem {
       background: #fef2f2;
       border-left: 6px solid #ef4444;
-      padding: 1.5rem;
-      border-radius: 0 8px 8px 0;
+      padding: 1.25rem 1.4rem;
+      border-radius: 0 12px 12px 0;
       margin-bottom: 2rem;
     }
-    
-    .problem h2 { margin-top: 0; color: #991b1b; }
-    
-    /* Framework */
-    .framework h2 { margin-bottom: 1.5rem; }
-    
+    .problem h2 { margin: 0 0 0.5rem; color: #991b1b; font-size: 1.15rem; }
+
+    .section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .section-head h2 { margin: 0; }
+    .section-head p { margin: 0; color: #6b7280; }
+
     .phase-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.25rem;
     }
-    
     .phase-card {
       background: white;
-      border-radius: 8px;
-      padding: 1.5rem;
+      border-radius: 14px;
+      padding: 1.35rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      text-align: center;
       border: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    
+    .phase-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.12);
+      border-color: #c7d2fe;
+    }
     .phase-number {
-      display: inline-block;
+      display: inline-grid;
+      place-items: center;
       width: 32px;
       height: 32px;
       background: #4f46e5;
       color: white;
       border-radius: 50%;
-      alignment: center;
-      line-height: 32px;
-      font-weight: bold;
-      margin-bottom: 0.5rem;
+      font-weight: 800;
+      margin-bottom: 0.55rem;
     }
-    
-    .phase-card h3 { margin: 0.5rem 0 1rem; }
-    
-    /* CTA */
+    .phase-card h3 { margin: 0 0 0.4rem; }
+    .phase-card p { margin: 0 0 1rem; color: #6b7280; flex: 1; }
+    .phase-meta { font-size: 0.8rem; color: #4f46e5; font-weight: 700; }
+
+    .kit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 2rem;
+    }
+    .kit-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      text-decoration: none;
+      color: inherit;
+    }
+    .kit-card:hover { border-color: #a5b4fc; background: #f8fafc; }
+    .kit-card strong { display: block; margin-bottom: 0.2rem; }
+    .kit-card span { color: #6b7280; font-size: 0.9rem; }
+
     .cta {
       text-align: center;
-      padding: 2rem;
+      padding: 1.75rem 1.5rem;
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
       color: white;
-      border-radius: 8px;
-      margin-top: 2rem;
+      border-radius: 14px;
     }
-    
-    .cta h2 { margin-top: 0; }
-    .cta a {
-      color: white;
-      text-decoration: underline;
-      font-weight: bold;
-    }
-    
-    /* Footer */
+    .cta h2 { margin: 0 0 0.4rem; }
+    .cta p { margin: 0 0 1rem; opacity: 0.95; }
+    .cta a { color: white; font-weight: 700; }
+
     .footer {
       text-align: center;
-      padding: 2rem;
+      padding: 2rem 1rem;
       color: #6b7280;
-      margin-top: 2rem;
+      font-size: 0.92rem;
     }
-    
-    @media (max-width: 768px) {
-      .header { flex-direction: column; text-align: center; }
-      .header nav { margin-top: 1rem; }
-      .hero h1 { font-size: 2rem; }
+    .footer a { color: #4f46e5; }
+
+    .local-note {
+      font-size: 0.85rem;
+      color: #475569;
+      background: #fff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      margin-top: 1.25rem;
     }
   </style>
 </head>
 <body>
-  <nav class="container">
-    <div class="header">
-      <h1>AppLaunch Planner</h1>
-      <nav>
-        <a href="/app-launch-planner/">Home</a>
-        <a href="/app-launch-planner/quick-start.html">Quick Start</a>
-        <a href="/app-launch-planner/tools.html">Tools</a>
-        <a href="/app-launch-planner/phases/1-market-mining.html">Phase 1</a>
-      </nav>
-    </div>
-  </nav>
-
-  <main class="container">
+  <main class="container" id="alp-main">
     <section class="hero">
-      <h1>Build Profitable Apps, Fast</h1>
-      <p class="subtitle">Systematic framework to find, validate, and launch apps that convert visitors into paying users</p>
+      <div class="eyebrow">Local-first · No backend · Your browser only</div>
+      <h1>Sherpa for apps that make money</h1>
+      <p class="subtitle">Validate ideas with real market sources, track the work, and get guided from niche to shipped smartphone app — without guessing.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="phases/1-market-mining.html">Start Phase 1</a>
+        <a class="btn btn-ghost" href="validator.html">Score an idea</a>
+        <a class="btn btn-ghost" href="quick-start.html">4-hour fast track</a>
+      </div>
+      <p class="local-note">All research stays on this device (localStorage). Use Hub from any page — the white button stays pinned at the top.</p>
     </section>
 
     <section class="problem">
-      <h2>Why This Exists</h2>
-      <p>Most app founders spend months building something nobody wants. They fail because they:</p>
-      <ul>
-        <li><strong>Build on assumptions</strong> instead of market data</li>
-        <li><strong>Enter broad categories</strong> without a specific audience</li>
-        <li><strong>Skip validation</strong> and discover their wrong idea weeks later</li>
-      </ul>
-      <p>This planner fixes all three.</p>
+      <h2>Why this exists</h2>
+      <p>Most app founders spend months building something nobody wants. They fail because they build on assumptions, enter broad categories, and skip validation. This planner is the trail map so you don't.</p>
     </section>
 
-    <section class="framework">
-      <h2>The 4-Phase Framework</h2>
-      <p>Each phase builds on the last. Complete one before moving to the next.</p>
-      
-      <div class="phase-grid">
-        <div class="phase-card">
-          <div class="phase-number">1</div>
-          <h3>Market Mining</h3>
-          <p>Find app niches where people already pay $10K+/month</p>
-          <a href="/app-launch-planner/phases/1-market-mining.html">Start →</a>
-        </div>
-        
-        <div class="phase-card">
-          <div class="phase-number">2</div>
-          <h3>Competitive Analysis</h3>
-          <p>Analyze competitors, find weaknesses to exploit</p>
-          <a href="/app-launch-planner/phases/2-competitive-analysis.html">Start →</a>
-        </div>
-        
-        <div class="phase-card">
-          <div class="phase-number">3</div>
-          <h3>Pain Point Validation</h3>
-          <p>Test your idea with a landing page before building</p>
-          <a href="/app-launch-planner/phases/3-pain-point-validation.html">Start →</a>
-        </div>
-        
-        <div class="phase-card">
-          <div class="phase-number">4</div>
-          <h3>Build Roadmap</h3>
-          <p>7-day plan to build & launch your MVP</p>
-          <a href="/app-launch-planner/phases/4-build-roadmap.html">Start →</a>
-        </div>
-      </div>
-    </section>
+    <div class="section-head">
+      <h2>The 4-phase trail</h2>
+      <p>Finish one before the next. Jump back to Hub anytime.</p>
+    </div>
+    <div class="phase-grid">
+      <a class="phase-card" href="phases/1-market-mining.html">
+        <div class="phase-number">1</div>
+        <h3>Market Mining</h3>
+        <p>Find niches where people already pay $10K+/month. Mine reviews, not hunches.</p>
+        <span class="phase-meta">2–4 hrs · Start here →</span>
+      </a>
+      <a class="phase-card" href="phases/2-competitive-analysis.html">
+        <div class="phase-number">2</div>
+        <h3>Competitive Analysis</h3>
+        <p>Map competitor weaknesses and design the fix people will convert for.</p>
+        <span class="phase-meta">2–3 hrs →</span>
+      </a>
+      <a class="phase-card" href="phases/3-pain-point-validation.html">
+        <div class="phase-number">3</div>
+        <h3>Pain Point Validation</h3>
+        <p>Prove demand with a landing page and cash before you write production code.</p>
+        <span class="phase-meta">4–8 hrs →</span>
+      </a>
+      <a class="phase-card" href="phases/4-build-roadmap.html">
+        <div class="phase-number">4</div>
+        <h3>Build Roadmap</h3>
+        <p>7-day MVP plan with paywall on Day 5. Ship, then learn.</p>
+        <span class="phase-meta">7 days →</span>
+      </a>
+    </div>
+
+    <div class="section-head">
+      <h2>Toolkit</h2>
+      <p>Work locally. Export when you want a teammate's eyes.</p>
+    </div>
+    <div class="kit-grid">
+      <a class="kit-card" href="validator.html"><strong>Idea Validator</strong><span>7-factor score before you commit.</span></a>
+      <a class="kit-card" href="notes.html"><strong>Notes</strong><span>Phase-tagged research inbox.</span></a>
+      <a class="kit-card" href="calculators.html"><strong>Calculators</strong><span>TAM, LTV/CAC, break-even, ROI.</span></a>
+      <a class="kit-card" href="resources.html"><strong>Resources</strong><span>Curated tools and alternatives.</span></a>
+      <a class="kit-card" href="legal.html"><strong>Legal / IP</strong><span>Trademark, patents, store rules.</span></a>
+      <a class="kit-card" href="prompts.html"><strong>Prompts</strong><span>Injection-safe AI templates.</span></a>
+      <a class="kit-card" href="tools.html"><strong>Tool reference</strong><span>Research, validation, paywalls.</span></a>
+      <a class="kit-card" href="execution-log.html"><strong>Execution log</strong><span>What you shipped and what's next.</span></a>
+    </div>
 
     <section class="cta">
-      <h2>Ready to build something profitable?</h2>
-      <p>Start with <a href="/app-launch-planner/quick-start.html">Quick Start</a> - the fastest path from idea to launch</p>
-      <p>Or dive into <a href="/app-launch-planner/tools.html">Tools Reference</a> for all the resources you need</p>
+      <h2>Ready to hunt a niche?</h2>
+      <p>Phase 1 is market mining — proof of revenue before a single screen.</p>
+      <a href="phases/1-market-mining.html">Open Phase 1 →</a>
     </section>
   </main>
 
   <footer class="footer">
-    <p>AppLaunch Planner — Build better apps, faster</p>
-    <p>Based on insights from <a href="https://www.youtube.com/watch?v=vZXn_BSi5AE" target="_blank" rel="noopener">Paywall Strategies video</a> and <a href="https://www.youtube.com/watch?v=eVrUkmE-j7g" target="_blank" rel="noopener">App Validation video</a></p>
+    <p>AppLaunch Planner — local-first sherpa for iOS/Android indies</p>
+    <p>Insights from <a href="https://www.youtube.com/watch?v=vZXn_BSi5AE" target="_blank" rel="noopener">Paywall Strategies</a> and <a href="https://www.youtube.com/watch?v=eVrUkmE-j7g" target="_blank" rel="noopener">App Validation</a></p>
     <p><strong>Live:</strong> <a href="https://djphamdev.github.io/app-launch-planner/">djphamdev.github.io/app-launch-planner</a></p>
   </footer>
 </body>
