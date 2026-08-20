@@ -648,3 +648,42 @@ html[data-theme="dark"] .source-card .free-pill {
   background: #052e16;
   color: #6ee7b7;
 }
+
+/* Studio tools (Paywall + Review Mine) */
+.studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+@media (max-width: 900px) { .studio-grid { grid-template-columns: 1fr; } }
+.studio-seq { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.75rem 0; }
+.studio-chip {
+  background: #eef2ff; color: #3730a3; border-radius: 999px; padding: 0.35rem 0.75rem;
+  font-size: 0.85rem; font-weight: 700;
+}
+.studio-chip.warn { background: #fef3c7; color: #92400e; }
+.studio-chip.ok { background: #d1fae5; color: #065f46; }
+.studio-chip.leak { background: #fee2e2; color: #991b1b; text-decoration: line-through; }
+.studio-phone {
+  width: 260px; margin: 0 auto; background: #0f172a; color: #f8fafc; border-radius: 28px;
+  padding: 1.1rem 1rem 1.25rem; min-height: 420px; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.28);
+}
+.studio-phone .notch { width: 72px; height: 8px; background: #334155; border-radius: 999px; margin: 0 auto 0.9rem; }
+.studio-phone h3 { margin: 0 0 0.35rem; font-size: 1.15rem; color: #fff; }
+.studio-phone p { margin: 0 0 0.75rem; color: #cbd5e1; font-size: 0.88rem; }
+.studio-plan {
+  border: 1px solid #334155; border-radius: 10px; padding: 0.55rem 0.7rem; margin-bottom: 0.45rem;
+  display: flex; justify-content: space-between; font-size: 0.82rem;
+}
+.studio-plan.hero { border-color: #818cf8; background: #1e1b4b; }
+.studio-cta {
+  display: block; width: 100%; margin-top: 0.85rem; background: #4f46e5; color: #fff; border: 0;
+  border-radius: 10px; padding: 0.75rem; font-weight: 800; cursor: default;
+}
+.studio-tiny { font-size: 0.72rem; color: #94a3b8; text-align: center; margin-top: 0.55rem; }
+.check-row { display: flex; gap: 0.55rem; align-items: flex-start; padding: 0.45rem 0; }
+.check-row label { cursor: pointer; }
+.principle { border-bottom: 1px solid #e5e7eb; padding: 0.65rem 0; }
+.principle:last-child { border-bottom: none; }
+html[data-theme="dark"] .studio-chip { background: #1e1b4b; color: #c7d2fe; }
+html[data-theme="dark"] .studio-chip.warn { background: #422006; color: #fde68a; }
+html[data-theme="dark"] .studio-chip.ok { background: #052e16; color: #6ee7b7; }
+html[data-theme="dark"] .studio-chip.leak { background: #450a0a; color: #fecaca; }
+html[data-theme="dark"] .principle { border-color: #243044; }
+html[data-theme="dark"] .studio-phone { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45); }

@@ -16,7 +16,9 @@ const STORAGE_KEYS = {
   VALIDATIONS: 'applaunch_validations',
   LEGAL: 'applaunch_legal',
   PROMPTS: 'applaunch_prompts',
-  COLLAB: 'applaunch_collab'
+  COLLAB: 'applaunch_collab',
+  PAYWALL: 'applaunch_paywall',
+  MINING: 'applaunch_mining'
 };
 
 const DEFAULT_SETTINGS = {
@@ -520,7 +522,86 @@ class BusinessCalculator {
       paybackMonths: investment > 0 ? Math.ceil(investment / (monthlyRevenue - monthlyCosts || 1)) : 0
     };
   }
+
+  static calculatePaywallFunnel(data) {
+    var opens = Number(data.firstOpens) || 0;
+    var signupFirst = !!data.signupFirst;
+    var signupDrop = data.signupDrop != null ? Number(data.signupDrop) : 0.60;
+    var viewRate = signupFirst ? Math.max(0, 1 - signupDrop) : 0.94;
+    var trialRate = Number(data.trialRate) || 0;
+    var paidRate = Number(data.paidRate) || 0;
+    var views = opens * viewRate;
+    var trials = views * trialRate;
+    var paid = trials * paidRate;
+    var hardTrials = trials * 2;
+    var hardPaid = hardTrials * paidRate;
+    return {
+      viewRate: Math.round(viewRate * 1000) / 10,
+      views: Math.round(views),
+      trials: Math.round(trials * 10) / 10,
+      paid: Math.round(paid * 10) / 10,
+      hardTrials: Math.round(hardTrials * 10) / 10,
+      hardPaid: Math.round(hardPaid * 10) / 10,
+      viewLift: signupFirst ? 'Paywall before signup typically lifts views ~40% → 94%' : 'Paywall already sits before account creation',
+      diminishingViews: 8
+    };
+  }
+
+  static recommendHardPaywall(data) {
+    var reasons = [];
+    if (data.paidTraffic) reasons.push('Paid traffic: you already paid for the click — force try or leave.');
+    if (data.downloadsNoSales) reasons.push('Downloads without sales: hard wall tests product-market fit immediately.');
+    if (data.healthFitness) reasons.push('Health/fitness: hard walls are normal in the category. Be aggressive at launch.');
+    if (data.launch) reasons.push('Launch: test willingness to pay before you pile on features.');
+    var acquiredFree = !!data.acquiredFreeUsers;
+    return {
+      useHard: reasons.length > 0,
+      reasons: reasons,
+      caution: acquiredFree
+        ? 'Existing free users will one-star a sudden hard wall. Prefer hard only on new/paid cohorts; keep organic soft if you inherited a free app.'
+        : 'Hard walls raise trial-start rate. Trial-to-paid often stays flat. Removing the X once cut revenue in half.',
+      splitTest: 'If you run Meta ads, hard-wall paid users and keep organic premium/soft. Remote tools (Superwall) can split this without a store update.'
+    };
+  }
+
+  static ctaCopy(platform, lifetime) {
+    if (lifetime) {
+      return { primary: 'Unlock lifetime insights', avoid: 'Get all features', note: 'Unlock + lifetime beat generic “get features” on a one-time IAP.' };
+    }
+    if (platform === 'android') {
+      return { primary: 'Start free trial', avoid: 'Subscribe', note: 'Android converts better with explicit trial language.' };
+    }
+    return { primary: 'Continue', avoid: 'Start free trial', note: 'On iOS, Continue beat Start free trial and Subscribe.' };
+  }
 }
+
+var NicheEngine = {
+  position: function(data) {
+    var cat = (data.category || 'this category').trim();
+    var audience = (data.audience || 'a specific group').trim();
+    var problem = (data.problem || 'a recurring job').trim();
+    var better = (data.better || 'simpler and built for them').trim();
+    return 'A ' + cat + ' for ' + audience + ' who need ' + problem + ' — ' + better + ' than the generic apps they already tried.';
+  },
+  recurringHint: function(text) {
+    var t = (text || '').toLowerCase();
+    var hits = ['daily', 'every day', 'habit', 'weekly', 'track', 'remind', 'log', 'streak', 'subscription', 'come back'];
+    var found = hits.filter(function(w) { return t.indexOf(w) !== -1; });
+    return {
+      recurring: found.length > 0,
+      found: found,
+      advice: found.length
+        ? 'Looks like a repeat-use loop. Subscriptions fit when people come back.'
+        : 'If they open once and leave, skip subscriptions. Hunt a daily/weekly job instead.'
+    };
+  },
+  competitionAdvice: function(count) {
+    var n = Number(count) || 0;
+    if (n === 0) return 'No competitors often means no demand. Be suspicious.';
+    if (n < 5) return 'Some proof of spend, room to specialize.';
+    return 'Competition is a good sign — people already pay. Win with a narrower audience, not a brand-new category.';
+  }
+};
 
 // Prompt Engineering with Injection Protection
 class PromptEngine {
@@ -577,6 +658,8 @@ var SiteNav = {
     'quick-start': { file: 'quick-start.html', label: 'Quick Start' },
     validator: { file: 'validator.html', label: 'Validator' },
     notes: { file: 'notes.html', label: 'Notes' },
+    paywall: { file: 'paywall.html', label: 'Paywall' },
+    mining: { file: 'mining.html', label: 'Review Mine' },
     calculators: { file: 'calculators.html', label: 'Calculators' },
     resources: { file: 'resources.html', label: 'Resources' },
     legal: { file: 'legal.html', label: 'Legal/IP' },
@@ -610,6 +693,8 @@ var SiteNav = {
     if (/4-build-roadmap/.test(p)) return 'phase-4';
     if (/quick-start/.test(p)) return 'quick-start';
     if (/validator/.test(p)) return 'validator';
+    if (/paywall\.html/.test(p)) return 'paywall';
+    if (/(?:^|\/)mining\.html/.test(p)) return 'mining';
     if (/notes/.test(p)) return 'notes';
     if (/calculators/.test(p)) return 'calculators';
     if (/resources/.test(p)) return 'resources';
@@ -657,8 +742,8 @@ var SiteNav = {
     var href = this.href.bind(this);
     var cur = this.currentAttr;
 
-    var toolIds = ['quick-start', 'validator', 'notes', 'calculators', 'resources'];
-    var moreIds = ['legal', 'prompts', 'tools', 'log'];
+    var toolIds = ['quick-start', 'validator', 'paywall', 'notes', 'calculators', 'resources'];
+    var moreIds = ['mining', 'legal', 'prompts', 'tools', 'log'];
     var phaseIds = ['phase-1', 'phase-2', 'phase-3', 'phase-4'];
 
     var moreLinks = moreIds.map(function(id) {
@@ -836,6 +921,7 @@ window.AppLaunch = {
   calculator: BusinessCalculator,
   prompts: PromptEngine,
   legal: LegalGuide,
+  niche: NicheEngine,
   nav: SiteNav,
   theme: Theme,
   STORAGE_KEYS: STORAGE_KEYS

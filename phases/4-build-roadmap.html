@@ -22,7 +22,7 @@
 <body>
   <noscript><p><a href="../index.html">← Back to Hub</a></p></noscript>
   <main>
-  <p class="phase-tools">Work with: <a href="../notes.html">Notes</a> · <a href="../legal.html">Legal/IP</a> · <a href="../resources.html">Resources</a></p>
+  <p class="phase-tools">Work with: <a href="../paywall.html">Paywall Studio</a> · <a href="../notes.html">Notes</a> · <a href="../legal.html">Legal/IP</a> · <a href="../resources.html">Resources</a></p>
   <h1><span class="step-number">4</span>Build Roadmap</h1>
   <p>Build smart, not big. An MVP that converts beats a perfect app that nobody finds.</p>
   
@@ -98,12 +98,13 @@
       <div>
         <h3>Day 5: Paywall Integration</h3>
         <div class="paywall-focus">
-          <strong>This is critical - read the paywall video insights carefully:</strong>
+          <strong>Build the wall in <a href="../paywall.html">Paywall Studio</a> first — then wire IAP:</strong>
           <ul>
-            <li>Show paywall on Day 0 (first open)</li>
-            <li>Hard paywall OK if category-appropriate</li>
-            <li>In-app purchase: "Unlock lifetime insights" beats "Get all features"</li>
-            <li>iOS: "Continue" button. Android: "Start free trial"</li>
+            <li>Onboarding → <strong>paywall</strong> → start trial → <strong>then</strong> force sign-in. Never leak 60% on a hard signup screen.</li>
+            <li>Day 0 views near 100%. Hard wall for paid traffic / fitness launch; keep organic soft if you inherited free users.</li>
+            <li>Three-screen trial explainer (try free → reminder 2 days before → timeline). CTA above the fold.</li>
+            <li>iOS: <strong>Continue</strong>. Android: <strong>Start free trial</strong>. Lifetime IAP: <strong>Unlock lifetime insights</strong>, not “Get all features”.</li>
+            <li>2–3 plans. Monthly as decoy. Test trial on weekly if yearly trials don’t convert to paid. Video / before-after on the wall.</li>
           </ul>
         </div>
         <div class="todo">✅ Integrate <a href="https://www.revenuecat.com" target="_blank" rel="noopener">RevenueCat</a> / <a href="https://developer.apple.com/in-app-purchase/" target="_blank" rel="noopener">Apple IAP</a> / <a href="https://developer.android.com/google/play/billing" target="_blank" rel="noopener">Google Play Billing</a></div>

@@ -1,43 +1,46 @@
-# Phase 1: Paywall Conversion Checklist
-# Based on YouTube video analysis: https://youtu.be/vZXn_BSi5AE
+# Paywall conversion checklist
 
-## Hard Paywall Timing
-- [ ] Show paywall on Day 0 (first app open)
-- [ ] Maximize first open and paywall view to 100%
-- [ ] Position paywall immediately after onboarding, not after X out
+Use with [Paywall Studio](../paywall.html). Check these before Day 5 IAP work.
 
-## Pricing Strategy
-- [ ] Test hard paywall for fitness/health categories
-- [ ] Remove "X" out option - losing 50% revenue is real data
-- [ ] Accept some 1-star reviews from paid traffic (expected)
+## 1. Onboarding / day 0
+- [ ] Paywall sits in onboarding, not after they have used the app
+- [ ] First-open → paywall view as close to 100% as you can measure
+- [ ] Paywall **before** account creation (signup-first can leak ~60%)
+- [ ] After trial starts, force sign-in (Calm pattern)
 
-## Paywall Copy Testing
-- [ ] A/B test: "Get all features" vs "Unlock lifetime insights"
-- [ ] "Continue" button wins on iOS (better than "Start Free Trial")
-- [ ] "Start Free Trial" wins on Android
-- [ ] Include value-focused language: "Unlock lifetime insights"
+## 2. Hard vs soft
+- [ ] Hard wall (no X) on paid / Meta traffic
+- [ ] Hard wall if you have downloads and no sales
+- [ ] Hard wall on health/fitness launch to test willingness to pay
+- [ ] Soft wall for organic if you inherited users who had the app free
+- [ ] You accept that removing the X can cut start-trial (and revenue) in half while trial-to-paid stays flat
 
-## Social Proof
-- [ ] Add "Join 10,000+ users" or similar
-- [ ] Include testimonials above the fold
-- [ ] Show user count or success stories
+## 3. Explain the trial
+- [ ] Screen: we want you to try [app] free
+- [ ] Screen: reminder ~2 days before it ends + notification permission
+- [ ] Screen: timeline paywall
+- [ ] You did **not** ship a “resume” style variant without testing — that one lost
 
-## Visual Content
-- [ ] Add video demonstrating app value
-- [ ] Use before/after screenshots
-- [ ] Include progress or achievement indicators
+## 4. Sell the outcome
+- [ ] Headline is before/after or the job done, not a feature list
+- [ ] Utility apps show “you used X, we can save Y”
+- [ ] Health apps show the goal body / habit, not the workout catalog
 
-## Plan Comparison
-- [ ] Show yearly plan prominently (often converts better than monthly)
-- [ ] Include context: "$10/year vs $1.99/month" comparison
-- [ ] Have 2-3 plan options (conversion sweet spot)
+## 5. Long wall + obvious value
+- [ ] Plans + CTA above the fold
+- [ ] Scroll: proof, benefits, free vs paid table
+- [ ] Floating CTA while scrolling
+- [ ] Video or real person on the wall if you can (graphics → person → video)
+- [ ] Keep showing the wall; diminishing returns around 8 views
 
-## Paywall Views
-- [ ] Target: 8+ paywall views before diminishing returns
-- [ ] Test paywall placement timing
-- [ ] Consider showing paywall before sign-up (if viable)
+## 6. Offer
+- [ ] Two or three plans (three often converts best)
+- [ ] Yearly is not alone — cheap weekly/monthly makes yearly look like the deal
+- [ ] Monthly is a decoy, not the hero
+- [ ] Trial is on the plan that actually converts to paid (try 3-day weekly if 7-day yearly stalls)
+- [ ] Most categories still convert better **with** a trial
 
-## Platform-Specific
-- [ ] iOS: "Continue" + "Unlock lifetime insights"
-- [ ] Android: "Start free trial" + clear cancellation
-- [ ] Test same strategy across platforms, adjust by data
+## 7. CTA
+- [ ] iOS: Continue (not Start free trial / Subscribe)
+- [ ] Android: Start free trial
+- [ ] Lifetime IAP: Unlock lifetime insights (not Get all features)

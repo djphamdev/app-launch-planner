@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paywall Studio - App Launch Planner</title>
+  <script src="app-core.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 1100px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .lede { color: #6b7280; margin-top: 0; }
+    .calc-card { background: white; border-radius: 12px; padding: 1.35rem 1.45rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 1.15rem; }
+    .calc-card h2 { margin: 0 0 0.4rem; color: #1e40af; }
+    .calc-card p.hint { margin: 0 0 0.9rem; color: #6b7280; font-size: 0.92rem; }
+    .input-row { display: flex; gap: 1rem; margin: 0.6rem 0; flex-wrap: wrap; }
+    .input-group { flex: 1; min-width: 140px; }
+    .input-group label { display: block; font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box;
+    }
+    .result-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1rem; margin-top: 0.85rem; }
+    .result-box.warn { background: #fffbeb; border-color: #fcd34d; }
+    .result-box.bad { background: #fef2f2; border-color: #fca5a5; }
+    .result-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; border-bottom: 1px solid #dcfce7; }
+    .result-row:last-child { border-bottom: none; }
+    .result-label { color: #6b7280; }
+    .result-value { font-weight: 700; }
+    .btn { background: #4f46e5; color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 8px; font-size: 0.95rem; cursor: pointer; font-weight: 700; }
+    .btn:hover { background: #4338ca; }
+    .saved { font-size: 0.8rem; color: #059669; margin-left: 0.6rem; }
+    .ladder { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+    @media (max-width: 700px) { .ladder { grid-template-columns: 1fr; } }
+    .rung { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; padding: 0.75rem; text-align: center; }
+    .rung strong { display: block; font-size: 1.35rem; color: #4f46e5; }
+  </style>
+</head>
+<body>
+  <main id="alp-main">
+    <h1>Paywall Studio</h1>
+    <p class="lede">Most buyers start a trial on day zero — before they use the app. Design the wall, the sequence, and the offer here. Autosaves in this browser.</p>
+
+    <div class="calc-card">
+      <h2>1. First-open funnel</h2>
+      <p class="hint">Nearly all trial starts happen the day they open the app. People who don’t try immediately rarely try at all. Push first-open → paywall view as close to 100% as you can.</p>
+      <div class="input-row">
+        <div class="input-group">
+          <label>First opens / day</label>
+          <input type="number" id="firstOpens" value="1000" min="1">
+        </div>
+        <div class="input-group">
+          <label>Signup drop if signup is first (%)</label>
+          <input type="number" id="signupDrop" value="60" min="0" max="100">
+        </div>
+        <div class="input-group">
+          <label>Trial start on paywall view (%)</label>
+          <input type="number" id="trialRate" value="8" min="0" max="100" step="0.1">
+        </div>
+        <div class="input-group">
+          <label>Trial → paid (%)</label>
+          <input type="number" id="paidRate" value="40" min="0" max="100" step="0.1">
+        </div>
+      </div>
+      <label class="check-row"><input type="checkbox" id="signupFirst"> Show <strong>signup before</strong> the paywall (the leak)</label>
+      <div class="result-box" id="funnelOut"></div>
+    </div>
+
+    <div class="studio-grid">
+      <div class="calc-card">
+        <h2>2. Sequence</h2>
+        <p class="hint">One fitness app flipped signup and paywall. Views went 40% → 94%. Trial starts +190%. Sales +52%. After the trial starts, force sign-in — Calm does this.</p>
+        <div class="studio-seq" id="seqGood">
+          <span class="studio-chip">Onboarding</span> →
+          <span class="studio-chip ok">Hard paywall</span> →
+          <span class="studio-chip">Start trial</span> →
+          <span class="studio-chip">Then sign in</span>
+        </div>
+        <div class="studio-seq" id="seqBad">
+          <span class="studio-chip">Onboarding</span> →
+          <span class="studio-chip leak">Hard signup</span> →
+          <span class="studio-chip warn">Paywall (if they survive)</span>
+        </div>
+        <p class="hint" style="margin-bottom:0">Diminishing returns around <strong>8 paywall views</strong>. Keep showing it — more views, more money — until that point.</p>
+      </div>
+
+      <div class="calc-card">
+        <h2>3. Hard vs soft</h2>
+        <p class="hint">Hard wall = no X. Soft = they can skip. Putting the X back once cut start-trial in half; trial-to-paid stayed the same, so revenue halved.</p>
+        <label class="check-row"><input type="checkbox" id="paidTraffic"> Paid traffic (Meta / ads)</label>
+        <label class="check-row"><input type="checkbox" id="downloadsNoSales"> Downloads but no sales</label>
+        <label class="check-row"><input type="checkbox" id="healthFitness"> Health / fitness category</label>
+        <label class="check-row"><input type="checkbox" id="launch"> App launch — testing product-market fit</label>
+        <label class="check-row"><input type="checkbox" id="acquiredFreeUsers"> Inherited an app people used for free</label>
+        <div class="result-box" id="hardOut"></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <h2>4. Explain the free trial</h2>
+      <p class="hint">A three-screen explainer (try free → reminder 2 days before → timeline paywall) has lifted trial activations ~56%. A “resume” looking variant lost. Ask for notification permission on the reminder screen.</p>
+      <div class="input-row">
+        <div class="input-group">
+          <label>App name</label>
+          <input type="text" id="appName" value="Your App">
+        </div>
+        <div class="input-group">
+          <label>Trial length (days)</label>
+          <input type="number" id="trialDays" value="7" min="1" max="30">
+        </div>
+        <div class="input-group">
+          <label>Reminder (days before end)</label>
+          <input type="number" id="remindDays" value="2" min="0" max="14">
+        </div>
+      </div>
+      <div class="studio-seq" id="trialScreens"></div>
+    </div>
+
+    <div class="studio-grid">
+      <div class="calc-card">
+        <h2>5. Copy + CTA lab</h2>
+        <p class="hint">Sell the outcome, not the feature list. iOS likes Continue. Android likes Start free trial. “Unlock lifetime insights” beat “Get all features” on a one-time IAP.</p>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Platform</label>
+            <select id="platform">
+              <option value="ios">iOS</option>
+              <option value="android">Android</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Offer type</label>
+            <select id="offerType">
+              <option value="sub">Subscription + trial</option>
+              <option value="lifetime">Lifetime / one-time</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Outcome headline (before / after)</label>
+          <input type="text" id="headline" value="Go from cluttered storage to 6 GB free">
+        </div>
+        <div class="input-group" style="margin-top:0.6rem">
+          <label>Benefit line</label>
+          <input type="text" id="benefit" value="Unlimited scans, no ads, delivery tracking">
+        </div>
+        <div class="result-box" id="ctaOut"></div>
+      </div>
+      <div class="calc-card">
+        <h2>Live wall</h2>
+        <p class="hint">Plans above the fold. CTA above the fold. Extra context lives below for people who scroll when they have to pay.</p>
+        <div class="studio-phone" id="phone"></div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <h2>6. Test the offer</h2>
+      <p class="hint">Weekly vs yearly depends on category. Monthly is usually weak as the hero. Two or three plans convert; three often wins. Yearly alone can feel expensive — a $1.99/mo next to $10/yr makes $10 look cheap. Moving a 7-day trial off yearly onto a 3-day weekly 3x’d sales in one app.</p>
+      <div class="input-row">
+        <div class="input-group">
+          <label>How many plans</label>
+          <select id="planCount">
+            <option value="1">1 — yearly only</option>
+            <option value="2" selected>2 — weekly + yearly</option>
+            <option value="3">3 — weekly + monthly + yearly</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Trial sits on</label>
+          <select id="trialOn">
+            <option value="weekly">Weekly (try 3-day)</option>
+            <option value="yearly">Yearly (try 7-day)</option>
+            <option value="none">No trial</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Weekly price</label>
+          <input type="text" id="priceWeek" value="$6.99">
+        </div>
+        <div class="input-group">
+          <label>Yearly price</label>
+          <input type="text" id="priceYear" value="$49.99">
+        </div>
+      </div>
+      <div class="result-box" id="offerOut"></div>
+    </div>
+
+    <div class="studio-grid">
+      <div class="calc-card">
+        <h2>7. Make value obvious</h2>
+        <p class="hint">Graphics → real person → product video. One soft-paywall app moved 2.5% → 4.7% → 6.8%. A longer wall with plans on top and proof below has turned $200/day into $1,000/day at 15 downloads — and +50% sales just from more context, even on a visual emoji app.</p>
+        <div class="ladder">
+          <div class="rung">Graphics<strong>2.5%</strong>starting point</div>
+          <div class="rung">Real person<strong>4.7%</strong>trust jump</div>
+          <div class="rung">Feature video<strong>6.8%</strong>winner</div>
+        </div>
+        <label class="check-row"><input type="checkbox" id="longPlans"> Plans + CTA above the fold</label>
+        <label class="check-row"><input type="checkbox" id="longProof"> Testimonials / social proof on scroll</label>
+        <label class="check-row"><input type="checkbox" id="longBenefits"> Outcome benefits, not a feature dump</label>
+        <label class="check-row"><input type="checkbox" id="longTable"> Free vs paid feature table</label>
+        <label class="check-row"><input type="checkbox" id="longFloat"> Floating CTA while they scroll</label>
+        <label class="check-row"><input type="checkbox" id="longVideo"> Video or before/after on the wall</label>
+        <div class="result-box" id="longOut"></div>
+      </div>
+      <div class="calc-card">
+        <h2>7 principles</h2>
+        <p class="hint">Check these before you ship Day 5.</p>
+        <div id="principles"></div>
+        <p style="margin:1rem 0 0"><button class="btn" type="button" id="saveBtn">Save studio</button><span class="saved" id="savedMsg"></span></p>
+      </div>
+    </div>
+  </main>
+  <script>
+    var KEY = AppLaunch.STORAGE_KEYS.PAYWALL;
+    var PRINCIPLES = [
+      ['p1', 'Paywall in onboarding. First-open → paywall view near 100%.'],
+      ['p2', 'Test a hard wall on paid traffic, no-sales downloads, and fitness launches.'],
+      ['p3', 'Explain the trial (try free → reminder → timeline) before the ask.'],
+      ['p4', 'Sell the outcome. Before/after beats a feature list.'],
+      ['p5', 'Long wall: plans on top, proof + table on scroll, CTA always visible.'],
+      ['p6', 'Make value obvious — video when you can. CTA above the fold.'],
+      ['p7', 'Test offers: 2–3 plans, weekly vs yearly, trial on the plan that converts to paid.']
+    ];
+
+    function val(id) { return document.getElementById(id); }
+    function num(id) { return Number(val(id).value) || 0; }
+    function checked(id) { return val(id).checked; }
+
+    function renderPrinciples(saved) {
+      var html = PRINCIPLES.map(function(p) {
+        var on = saved && saved.principles && saved.principles[p[0]];
+        return '<label class="principle check-row"><input type="checkbox" data-p="' + p[0] + '"' + (on ? ' checked' : '') + '> ' + p[1] + '</label>';
+      }).join('');
+      val('principles').innerHTML = html;
+    }
+
+    function funnel() {
+      var r = AppLaunch.calculator.calculatePaywallFunnel({
+        firstOpens: num('firstOpens'),
+        signupFirst: checked('signupFirst'),
+        signupDrop: num('signupDrop') / 100,
+        trialRate: num('trialRate') / 100,
+        paidRate: num('paidRate') / 100
+      });
+      val('funnelOut').innerHTML =
+        '<div class="result-row"><span class="result-label">Paywall view rate</span><span class="result-value">' + r.viewRate + '%</span></div>' +
+        '<div class="result-row"><span class="result-label">Views / day</span><span class="result-value">' + r.views + '</span></div>' +
+        '<div class="result-row"><span class="result-label">Trial starts (current)</span><span class="result-value">' + r.trials + '</span></div>' +
+        '<div class="result-row"><span class="result-label">Paid (current)</span><span class="result-value">' + r.paid + '</span></div>' +
+        '<div class="result-row"><span class="result-label">If hard wall ~2× trial starts</span><span class="result-value">' + r.hardTrials + ' trials → ' + r.hardPaid + ' paid</span></div>' +
+        '<p style="margin:0.7rem 0 0;font-size:0.9rem">' + r.viewLift + '. Keep showing the wall until ~' + r.diminishingViews + ' views.</p>';
+    }
+
+    function hard() {
+      var rec = AppLaunch.calculator.recommendHardPaywall({
+        paidTraffic: checked('paidTraffic'),
+        downloadsNoSales: checked('downloadsNoSales'),
+        healthFitness: checked('healthFitness'),
+        launch: checked('launch'),
+        acquiredFreeUsers: checked('acquiredFreeUsers')
+      });
+      var box = val('hardOut');
+      box.className = 'result-box' + (rec.useHard ? '' : ' warn');
+      var reasons = rec.reasons.length
+        ? '<ul style="margin:0.4rem 0 0.6rem;padding-left:1.1rem">' + rec.reasons.map(function(x) { return '<li>' + x + '</li>'; }).join('') + '</ul>'
+        : '<p>No hard-wall triggers checked. Soft is fine for organic — still show the wall on day 0.</p>';
+      box.innerHTML = '<strong>' + (rec.useHard ? 'Lean hard (no X) for this cohort.' : 'Default: soft is OK — still test hard on a slice.') + '</strong>' + reasons +
+        '<p style="margin:0 0 0.4rem">' + rec.caution + '</p><p style="margin:0">' + rec.splitTest + '</p>';
+    }
+
+    function trialScreens() {
+      var name = val('appName').value.trim() || 'this app';
+      var days = num('trialDays') || 7;
+      var remind = num('remindDays') || 2;
+      val('trialScreens').innerHTML =
+        '<span class="studio-chip">1. We want you to try ' + name + ' free — ' + days + ' days</span>' +
+        '<span class="studio-chip warn">2. Reminder ' + remind + ' days before it ends — ask notifications</span>' +
+        '<span class="studio-chip ok">3. Timeline paywall + CTA</span>';
+    }
+
+    function ctaAndPhone() {
+      var lifetime = val('offerType').value === 'lifetime';
+      var cta = AppLaunch.calculator.ctaCopy(val('platform').value, lifetime);
+      val('ctaOut').innerHTML = '<strong>Use: ' + cta.primary + '</strong><p style="margin:0.4rem 0 0">Skip “' + cta.avoid + '”. ' + cta.note + '</p>';
+
+      var n = Number(val('planCount').value);
+      var trialOn = val('trialOn').value;
+      var week = val('priceWeek').value || '$6.99';
+      var year = val('priceYear').value || '$49.99';
+      var plans = '';
+      if (n >= 2) {
+        plans += '<div class="studio-plan' + (trialOn === 'weekly' ? ' hero' : '') + '"><span>Weekly' + (trialOn === 'weekly' ? ' · trial' : '') + '</span><span>' + week + '</span></div>';
+      }
+      if (n === 3) {
+        plans += '<div class="studio-plan"><span>Monthly</span><span>$1.99</span></div>';
+      }
+      plans += '<div class="studio-plan' + (trialOn === 'yearly' || n === 1 ? ' hero' : '') + '"><span>Yearly' + (trialOn === 'yearly' ? ' · trial' : '') + '</span><span>' + year + '</span></div>';
+
+      var tiny = trialOn === 'none'
+        ? 'One-time or billed after purchase'
+        : 'You’ll get a reminder ' + (num('remindDays') || 2) + ' days before the trial ends';
+
+      val('phone').innerHTML =
+        '<div class="notch"></div>' +
+        '<h3>' + (val('headline').value || 'Get the outcome') + '</h3>' +
+        '<p>' + (val('benefit').value || '') + '</p>' +
+        plans +
+        '<button type="button" class="studio-cta">' + cta.primary + '</button>' +
+        '<div class="studio-tiny">' + tiny + '</div>';
+    }
+
+    function offer() {
+      var n = Number(val('planCount').value);
+      var trialOn = val('trialOn').value;
+      var notes = [];
+      if (n === 1) notes.push('Yearly alone often feels expensive. Add weekly or a cheap monthly decoy so yearly looks like the deal.');
+      if (n === 2) notes.push('Two plans is enough context. Default-select yearly if that’s the unit economics winner.');
+      if (n === 3) notes.push('Three options usually convert best. Keep monthly as the decoy, not the hero.');
+      if (trialOn === 'yearly') notes.push('If trials start but paid is weak, move the trial to a short weekly. One launch 3x’d sales that way.');
+      if (trialOn === 'weekly') notes.push('Short weekly trial + yearly as the “smart” pick is a strong default.');
+      if (trialOn === 'none') notes.push('Most apps still convert better with a trial. Only skip it if the category hates trials.');
+      notes.push('Don’t ship one offer forever. Weekly wins some categories; yearly wins others.');
+      val('offerOut').innerHTML = '<ul style="margin:0;padding-left:1.15rem">' + notes.map(function(x) { return '<li>' + x + '</li>'; }).join('') + '</ul>';
+    }
+
+    function longWall() {
+      var ids = ['longPlans', 'longProof', 'longBenefits', 'longTable', 'longFloat', 'longVideo'];
+      var n = ids.filter(checked).length;
+      var box = val('longOut');
+      box.className = 'result-box' + (n < 4 ? ' warn' : '');
+      box.innerHTML = '<strong>' + n + ' / 6 long-wall blocks on.</strong> People skip reading in the app — they read when they pay. Keep plans on top; let scrollers get proof.';
+    }
+
+    function collect() {
+      var principles = {};
+      document.querySelectorAll('#principles input').forEach(function(el) {
+        principles[el.getAttribute('data-p')] = el.checked;
+      });
+      return {
+        firstOpens: num('firstOpens'),
+        signupDrop: num('signupDrop'),
+        trialRate: num('trialRate'),
+        paidRate: num('paidRate'),
+        signupFirst: checked('signupFirst'),
+        paidTraffic: checked('paidTraffic'),
+        downloadsNoSales: checked('downloadsNoSales'),
+        healthFitness: checked('healthFitness'),
+        launch: checked('launch'),
+        acquiredFreeUsers: checked('acquiredFreeUsers'),
+        appName: val('appName').value,
+        trialDays: num('trialDays'),
+        remindDays: num('remindDays'),
+        platform: val('platform').value,
+        offerType: val('offerType').value,
+        headline: val('headline').value,
+        benefit: val('benefit').value,
+        planCount: val('planCount').value,
+        trialOn: val('trialOn').value,
+        priceWeek: val('priceWeek').value,
+        priceYear: val('priceYear').value,
+        longPlans: checked('longPlans'),
+        longProof: checked('longProof'),
+        longBenefits: checked('longBenefits'),
+        longTable: checked('longTable'),
+        longFloat: checked('longFloat'),
+        longVideo: checked('longVideo'),
+        principles: principles,
+        updatedAt: Date.now()
+      };
+    }
+
+    function apply(d) {
+      if (!d) return;
+      ['firstOpens', 'signupDrop', 'trialRate', 'paidRate', 'appName', 'trialDays', 'remindDays', 'headline', 'benefit', 'priceWeek', 'priceYear'].forEach(function(id) {
+        if (d[id] != null && val(id)) val(id).value = d[id];
+      });
+      ['signupFirst', 'paidTraffic', 'downloadsNoSales', 'healthFitness', 'launch', 'acquiredFreeUsers', 'longPlans', 'longProof', 'longBenefits', 'longTable', 'longFloat', 'longVideo'].forEach(function(id) {
+        if (val(id)) val(id).checked = !!d[id];
+      });
+      if (d.platform) val('platform').value = d.platform;
+      if (d.offerType) val('offerType').value = d.offerType;
+      if (d.planCount) val('planCount').value = d.planCount;
+      if (d.trialOn) val('trialOn').value = d.trialOn;
+      renderPrinciples(d);
+    }
+
+    function render() {
+      funnel();
+      hard();
+      trialScreens();
+      ctaAndPhone();
+      offer();
+      longWall();
+    }
+
+    function persist() {
+      AppLaunch.storage.lsSet(KEY, collect());
+      val('savedMsg').textContent = 'Saved locally';
+    }
+
+    function boot() {
+      var saved = AppLaunch.storage.lsGet(KEY);
+      renderPrinciples(saved || {});
+      apply(saved);
+      if (!saved) {
+        val('longPlans').checked = true;
+        val('longProof').checked = true;
+        val('longBenefits').checked = true;
+      }
+      render();
+      document.querySelector('main').addEventListener('input', function() { render(); persist(); });
+      document.querySelector('main').addEventListener('change', function() { render(); persist(); });
+      val('saveBtn').addEventListener('click', persist);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+  </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Mine - App Launch Planner</title>
+  <script src="app-core.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 1100px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .lede { color: #6b7280; margin-top: 0; }
+    .calc-card { background: white; border-radius: 12px; padding: 1.35rem 1.45rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 1.15rem; }
+    .calc-card h2 { margin: 0 0 0.4rem; color: #1e40af; }
+    .calc-card p.hint { margin: 0 0 0.9rem; color: #6b7280; font-size: 0.92rem; }
+    .input-row { display: flex; gap: 1rem; margin: 0.6rem 0; flex-wrap: wrap; }
+    .input-group { flex: 1; min-width: 160px; }
+    .input-group label { display: block; font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box;
+    }
+    textarea { min-height: 88px; resize: vertical; }
+    .result-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1rem; margin-top: 0.85rem; }
+    .result-box.warn { background: #fffbeb; border-color: #fcd34d; }
+    .result-box.bad { background: #fef2f2; border-color: #fca5a5; }
+    .btn { background: #4f46e5; color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 8px; font-size: 0.95rem; cursor: pointer; font-weight: 700; }
+    .btn:hover { background: #4338ca; }
+    .saved { font-size: 0.8rem; color: #059669; margin-left: 0.6rem; }
+    .comp { border: 1px dashed #cbd5e1; border-radius: 10px; padding: 0.85rem; margin-bottom: 0.75rem; }
+    .comp h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+    .gate { display: flex; justify-content: space-between; gap: 1rem; padding: 0.45rem 0; border-bottom: 1px solid #dcfce7; }
+    .gate:last-child { border-bottom: none; }
+    .links { font-size: 0.9rem; }
+    .links a { margin-right: 0.85rem; }
+  </style>
+</head>
+<body>
+  <main id="alp-main">
+    <h1>Review Mine</h1>
+    <p class="lede">Don’t wait for a brilliant original idea. Start with markets people already pay in, narrow the audience, and steal the product spec from 1-star reviews. Autosaves locally.</p>
+
+    <div class="calc-card">
+      <h2>Better, not new</h2>
+      <p class="hint">Habit trackers, AI writers, meditation, calorie apps keep shipping because users want a version that feels built for them — easier, faster, cheaper, or more specific. Competition proves spend. Zero competitors is often a demand warning.</p>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Broad category people already pay in</label>
+          <input type="text" id="category" placeholder="e.g. home workouts, Bible study, storage cleaner">
+        </div>
+        <div class="input-group">
+          <label>Specific audience (not “everyone”)</label>
+          <input type="text" id="audience" placeholder="e.g. parents over 60, night-shift nurses">
+        </div>
+      </div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Recurring job they do anyway</label>
+          <input type="text" id="problem" placeholder="e.g. log meals every day, review verses nightly">
+        </div>
+        <div class="input-group">
+          <label>How you’re better (fewer features is allowed)</label>
+          <input type="text" id="better" placeholder="e.g. 30-second setup, no ads, large type">
+        </div>
+      </div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Competing apps in this niche</label>
+          <input type="number" id="competitors" value="12" min="0">
+        </div>
+        <div class="input-group">
+          <label>Why they come back (usage copy)</label>
+          <input type="text" id="usage" placeholder="daily streak, weekly plan, reminder loop">
+        </div>
+      </div>
+      <p class="links">Mine charts:
+        <a href="https://theapplaunchpad.com/app-store-tracker" target="_blank" rel="noopener">AppLaunchpad charts</a>
+        <a href="https://applaunchpads.com/app-store-tracker" target="_blank" rel="noopener">AppLaunchPads</a>
+        <a href="https://apps.apple.com/charts" target="_blank" rel="noopener">Apple Top Grossing</a>
+        <a href="https://play.google.com/store/apps/top" target="_blank" rel="noopener">Play Top</a>
+      </p>
+      <div class="result-box" id="posOut"></div>
+    </div>
+
+    <div class="calc-card">
+      <h2>50-review worksheet</h2>
+      <p class="hint">Negative reviews are free market research. Sort low → high. Recurring lines like “too expensive”, “confusing”, “too many ads” are the product. Three competitors, ~50 reviews each. You still don’t need to build yet.</p>
+      <div id="comps"></div>
+    </div>
+
+    <div class="calc-card">
+      <h2>Validate before you build</h2>
+      <p class="hint">A landing page is hours. An app is months. Waitlist + demo video + cash beat “my friends said it sounds cool.” Opinion is not demand.</p>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Landing visitors</label>
+          <input type="number" id="visitors" value="50" min="0">
+        </div>
+        <div class="input-group">
+          <label>Waitlist / CTA clicks</label>
+          <input type="number" id="clicks" value="0" min="0">
+        </div>
+        <div class="input-group">
+          <label>Pre-orders / paid deposits</label>
+          <input type="number" id="orders" value="0" min="0">
+        </div>
+        <div class="input-group">
+          <label>Demo video recorded?</label>
+          <select id="demo">
+            <option value="no">Not yet</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+      </div>
+      <div class="result-box" id="valOut"></div>
+      <p style="margin:1rem 0 0"><button class="btn" type="button" id="saveBtn">Save mine</button><span class="saved" id="savedMsg"></span></p>
+    </div>
+  </main>
+  <script>
+    var KEY = AppLaunch.STORAGE_KEYS.MINING;
+
+    function val(id) { return document.getElementById(id); }
+    function num(id) { return Number(val(id).value) || 0; }
+
+    function compFields(i, d) {
+      d = d || {};
+      return '<div class="comp">' +
+        '<h3>Competitor ' + (i + 1) + '</h3>' +
+        '<div class="input-row">' +
+          '<div class="input-group"><label>Name</label><input data-c="' + i + '" data-f="name" value="' + (d.name || '') + '"></div>' +
+          '<div class="input-group"><label>Est. revenue / downloads signal</label><input data-c="' + i + '" data-f="signal" value="' + (d.signal || '') + '" placeholder="Top Grossing? $10K+/mo?"></div>' +
+        '</div>' +
+        '<div class="input-group"><label>Repeating 1-star complaints</label><textarea data-c="' + i + '" data-f="complaints" placeholder="too expensive, confusing onboarding, ads…">' + (d.complaints || '') + '</textarea></div>' +
+        '<div class="input-group" style="margin-top:0.5rem"><label>What you’d do instead (fewer features OK)</label><input data-c="' + i + '" data-f="fix" value="' + (d.fix || '') + '"></div>' +
+      '</div>';
+    }
+
+    function readComps() {
+      var out = [{}, {}, {}];
+      document.querySelectorAll('[data-c]').forEach(function(el) {
+        var i = Number(el.getAttribute('data-c'));
+        out[i][el.getAttribute('data-f')] = el.value;
+      });
+      return out;
+    }
+
+    function position() {
+      var sentence = AppLaunch.niche.position({
+        category: val('category').value,
+        audience: val('audience').value,
+        problem: val('problem').value,
+        better: val('better').value
+      });
+      var rec = AppLaunch.niche.recurringHint(val('problem').value + ' ' + val('usage').value);
+      var comp = AppLaunch.niche.competitionAdvice(num('competitors'));
+      var box = val('posOut');
+      box.className = 'result-box' + (rec.recurring ? '' : ' warn');
+      box.innerHTML =
+        '<p style="margin:0 0 0.6rem"><strong>Positioning:</strong> ' + sentence + '</p>' +
+        '<p style="margin:0 0 0.4rem">' + rec.advice + (rec.found.length ? ' Hits: ' + rec.found.join(', ') + '.' : '') + '</p>' +
+        '<p style="margin:0">' + comp + '</p>';
+    }
+
+    function gates() {
+      var visitors = num('visitors');
+      var clicks = num('clicks');
+      var orders = num('orders');
+      var ctr = visitors > 0 ? Math.round((clicks / visitors) * 1000) / 10 : 0;
+      var kill = visitors >= 50 && ctr < 2;
+      var cash = orders >= 5 || (visitors >= 20 && clicks >= 5);
+      var box = val('valOut');
+      box.className = 'result-box' + (kill ? ' bad' : (cash ? '' : ' warn'));
+      var demo = val('demo').value === 'yes' ? 'Demo video is a cheap demand test — keep it.' : 'Record a 30–60s demo of the outcome before writing production code.';
+      box.innerHTML =
+        '<div class="gate"><span>Waitlist CTR</span><strong>' + ctr + '%</strong></div>' +
+        '<div class="gate"><span>Pre-orders</span><strong>' + orders + '</strong></div>' +
+        '<p style="margin:0.7rem 0 0">' +
+          (kill
+            ? 'Kill or reposition. After ~50 visitors, under 2% CTR is a weak idea — not a marketing problem yet.'
+            : cash
+              ? 'Enough signal to sketch an MVP. Still don’t pile features. Build the complaint-fix only.'
+              : 'Need more action: drive 20–50 targeted visitors. 5+ waitlist clicks or any cash is a real yes.') +
+        '</p><p style="margin:0.45rem 0 0">' + demo + ' Friends saying “interesting” does not count.</p>';
+    }
+
+    function collect() {
+      return {
+        category: val('category').value,
+        audience: val('audience').value,
+        problem: val('problem').value,
+        better: val('better').value,
+        competitors: num('competitors'),
+        usage: val('usage').value,
+        visitors: num('visitors'),
+        clicks: num('clicks'),
+        orders: num('orders'),
+        demo: val('demo').value,
+        comps: readComps(),
+        updatedAt: Date.now()
+      };
+    }
+
+    function persist() {
+      AppLaunch.storage.lsSet(KEY, collect());
+      val('savedMsg').textContent = 'Saved locally';
+    }
+
+    function render() {
+      position();
+      gates();
+    }
+
+    function boot() {
+      var saved = AppLaunch.storage.lsGet(KEY) || {};
+      ['category', 'audience', 'problem', 'better', 'usage'].forEach(function(id) {
+        if (saved[id]) val(id).value = saved[id];
+      });
+      if (saved.competitors != null) val('competitors').value = saved.competitors;
+      if (saved.visitors != null) val('visitors').value = saved.visitors;
+      if (saved.clicks != null) val('clicks').value = saved.clicks;
+      if (saved.orders != null) val('orders').value = saved.orders;
+      if (saved.demo) val('demo').value = saved.demo;
+      var comps = saved.comps || [{}, {}, {}];
+      val('comps').innerHTML = [0, 1, 2].map(function(i) { return compFields(i, comps[i]); }).join('');
+      render();
+      document.querySelector('main').addEventListener('input', function() { render(); persist(); });
+      document.querySelector('main').addEventListener('change', function() { render(); persist(); });
+      val('saveBtn').addEventListener('click', persist);
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+  </script>
+</body>
+</html>

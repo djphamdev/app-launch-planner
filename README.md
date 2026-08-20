@@ -16,8 +16,10 @@ AppLaunch Planner is a **complete offline-first toolkit** that guides you from r
 4. **Prompt Engineering** - AI-safe templates with injection defense
 5. **Notes & Ideas Platform** - Tagged, searchable, phase-organized research
 6. **Idea Validator** - 7-factor scoring algorithm with live feedback
-7. **Resource Library** - Curated tools with alternatives for every stage
-8. **Collaboration Export** - Share complete research packages with teammates
+7. **Paywall Studio** - Day-0 funnel, hard/soft split, trial explainer, CTA/offer lab
+8. **Review Mine** - Narrow niches, 50-review worksheet, waitlist kill-gates
+9. **Resource Library** - Curated tools with alternatives for every stage
+10. **Collaboration Export** - Share complete research packages with teammates
 
 **All data stays in your browser** (localStorage/IndexedDB). No backend, no accounts, no tracking.
 
@@ -57,6 +59,8 @@ app-launch-planner/
 ├── prompts.html               # Prompt engineering + injection defense
 ├── notes.html                 # Notes/ideas platform with tags
 ├── validator.html             # 7-factor idea validator
+├── paywall.html               # Paywall Studio (funnel, hard/soft, CTA, offers)
+├── mining.html                # Review Mine (niche, 1-stars, waitlist gates)
 ├── resources.html             # Curated resource library
 ├── execution-log.html         # Project history
 ├── phases/
@@ -224,9 +228,9 @@ AppLaunch.legal.getContractsGuide()   // Co-founder, contractor, user agreements
 
 ### Phase 1: Market Mining (2-4 hrs)
 **Goal:** Find 3 niches with $10K+/mo revenue proof
-- Tool: AppLaunchPads Tracker
-- Action: Search categories → filter $10K+ MRR → read 10 negative reviews each
-- Output: "People want X but apps give Y problem"
+- Tool: AppLaunchPads Tracker + [Review Mine](mining.html)
+- Action: Search categories → filter $10K+ MRR → 50 negative reviews → narrow audience
+- Output: Positioning sentence + complaint → fix map. Competition is demand.
 
 ### Phase 2: Competitive Analysis (2-3 hrs)
 **Goal:** Document 3 specific weaknesses to exploit
@@ -236,7 +240,7 @@ AppLaunch.legal.getContractsGuide()   // Co-founder, contractor, user agreements
 
 ### Phase 3: Pain Point Validation (4-8 hrs)
 **Goal:** Prove demand with cash before coding
-- Tool: Carrd.co + Stripe Payment Links
+- Tool: Carrd.co + Stripe Payment Links + [Review Mine](mining.html) gates
 - Action: 1-page site → drive 20 targeted visitors → 5%+ CTR or $5 pre-order
 - Kill criteria: <2% CTR, 0 pre-orders after 50 visits
 
@@ -246,16 +250,17 @@ AppLaunch.legal.getContractsGuide()   // Co-founder, contractor, user agreements
 - Day 2: Architecture + state management
 - Day 3: Core feature (problem-solving)
 - Day 4: Features 2-3 + error handling
-- Day 5: **Paywall integration** (RevenueCat) - critical
+- Day 5: **Paywall Studio + IAP** ([paywall.html](paywall.html)) — sequence, copy, offers, then RevenueCat
 - Day 6: Device testing + beta feedback
 - Day 7: Store submission
 
-**Paywall Rules (from video research):**
-- Show Day 0 (first open)
-- iOS: "Continue" button, Android: "Start free trial"
-- Copy: "Unlock lifetime insights" > "Get all features"
-- Hard paywall OK for fitness/health
-- Video on paywall: 2.5% → 4.7% → 6.8% conversion
+**Paywall rules baked into the studio:**
+- Day 0: first-open → paywall view near 100%. Paywall **before** signup, then force sign-in
+- Hard wall on paid traffic / no-sales / fitness launch; soft for inherited free users
+- Explain the trial (try free → reminder → timeline). Sell outcomes, long wall + video
+- iOS: Continue. Android: Start free trial. Lifetime: Unlock lifetime insights
+- 2–3 plans; yearly needs a cheap neighbor; test trial on weekly if paid conversion stalls
+- More paywall views ≈ more money until ~8 views
 
 ---
 
@@ -272,6 +277,8 @@ All data stored in browser:
 | `applaunch_validations` | Experiment history |
 | `applaunch_legal_checks` | Checklist progress |
 | `applaunch_resource_checks` | Resource setup progress |
+| `applaunch_paywall` | Paywall Studio state |
+| `applaunch_mining` | Review Mine niche + reviews + gates |
 | `applaunch_settings` | User preferences |
 
 **Export/Import** (for sharing with @thatguyramo25):
