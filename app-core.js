@@ -48,6 +48,12 @@ var Theme = {
     var next = theme === 'light' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     document.documentElement.style.colorScheme = next;
+    if (!document.getElementById('alp-theme-boot') && document.head) {
+      var boot = document.createElement('style');
+      boot.id = 'alp-theme-boot';
+      boot.textContent = 'html[data-theme="dark"] body{background:#080b12!important;color:#dbe3ee!important}html[data-theme="dark"] .card,html[data-theme="dark"] .calc-card,html[data-theme="dark"] .legal-section,html[data-theme="dark"] .prompt-section,html[data-theme="dark"] .resource-section,html[data-theme="dark"] .sidebar,html[data-theme="dark"] .main-content,html[data-theme="dark"] .hero{background:#121826!important;color:#dbe3ee!important;border-color:#243044!important}';
+      document.head.appendChild(boot);
+    }
     var btn = document.querySelector('.alp-theme');
     if (btn) {
       var dark = next === 'dark';
