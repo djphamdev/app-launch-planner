@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 4: Build Roadmap - App Launch Planner</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .step-number { display: inline-block; width: 28px; height: 28px; background: #f59e0b; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-weight: bold; margin-right: 0.5rem; }
+    .step { margin: 1.5rem 0; padding: 1.5rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .checkpoint { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+    .timeline { margin: 2rem 0; }
+    .day { padding: 1rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; }
+    .day:first-child { border-top: 3px solid #4f46e5; }
+    .todo { background: #eff6ff; padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0; }
+    .critical { color: #dc2626; font-weight: bold; }
+    .success-metric { background: #f0fdf4; border-left: 4px solid #10b981; padding: 1rem; margin: 1rem 0; }
+    .paywall-focus { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <h1><span class="step-number">4</span>Build Roadmap</h1>
+  <p>Build smart, not big. An MVP that converts beats a perfect app that nobody finds.</p>
+  
+  <div class="checkpoint">
+    <strong>Checkpoint 4A:</strong> Validation succeeded. You have pre-orders/signups.
+  </div>
+
+  <h2>The Right Tool for the Job</h2>
+  <p>You mentioned using Cursor + Claude Code. Here's the optimal workflow:</p>
+  <ul>
+    <li><strong>Cursor</strong> - For complex UI work, refactoring, detailed logic</li>
+    <li><strong>Claude Code</strong> - For quick scripts, debugging, test automation</li>
+    <li><strong>LLM pair programming</strong> - Explain problems, get suggestions, iterate fast</li>
+  </ul>
+
+  <h2>Build Philosophy: Less is More</h2>
+  <p>From the videos: simple apps convert better than feature-bloated ones.</p>
+  <blockquote>
+    <strong>"If users can understand your app in 30 seconds instead of 5 minutes, that's a huge advantage."</strong>
+  </blockquote>
+
+  <h2>MVP Definition</h2>
+  <p>Your MVP is the <strong>minimum set of features that solves the core problem</strong> for early users. Everything else is scope creep.</p>
+  
+  <div class="success-metric">
+    <strong>Success Metric:</strong> 100 paying users in 30 days of launch
+  </div>
+
+  <h2>Your 7-Day Build Plan</h2>
+  <div class="timeline">
+    <div class="day">
+      <div>
+        <h3>Day 1: Wireframes & Tech Stack</h3>
+        <div class="todo">✅ Define core 3 features (no more)</div>
+        <div class="todo">✅ Choose: React Native / Flutter / Native</div>
+        <div class="todo">✅ Set up repo on GitHub</div>
+        <div class="todo">✅ Configure CI/CD (if applicable)</div>
+      </div>
+      <strong>~3 hours</strong>
+    </div>
+    
+    <div class="day">
+      <div>
+        <h3>Day 2: Core Architecture</h3>
+        <div class="todo">✅ Set up state management (Redux, Zustand, etc.)</div>
+        <div class="todo">✅ Create feature flags for future expansion</div>
+        <div class="todo">✅ Implement basic auth mock (don't overbuild)</div>
+      </div>
+      <strong>~4 hours</strong>
+    </div>
+    
+    <div class="day">
+      <div>
+        <h3>Day 3: Feature #1 Implementation</h3>
+        <div class="todo">✅ Build the core problem-solving feature</div>
+        <div class="todo">✅ Add basic styling (Tailwind, StyleSheet, etc.)</div>
+        <div class="todo">✅ Test on device</div>
+      </div>
+      <strong>~6 hours</strong>
+    </div>
+    
+    <div class="day">
+      <div>
+        <h3>Day 4: Features #2-3 + Polish</h3>
+        <div class="todo">✅ Implement remaining MVP features</div>
+        <div class="todo">✅ Add error handling</div>
+        <div class="todo">✅ Optimize for speed (lazy loading)</div>
+      </div>
+      <strong>~6 hours</strong>
+    </div>
+    
+    <div class="day">
+      <div>
+        <h3>Day 5: Paywall Integration</h3>
+        <div class="paywall-focus">
+          <strong>This is critical - read the paywall video insights carefully:</strong>
+          <ul>
+            <li>Show paywall on Day 0 (first open)</li>
+            <li>Hard paywall OK if category-appropriate</li>
+            <li>In-app purchase: "Unlock lifetime insights" beats "Get all features"</li>
+            <li>iOS: "Continue" button. Android: "Start free trial"</li>
+          </ul>
+        </div>
+        <div class="todo">✅ Integrate RevenueCat / Apple IAP / Google Play Billing</div>
+        <div class="todo">✅ Test test mode thoroughly</div>
+      </div>
+      <strong>~5 hours</strong>
+    </div>
+    
+    <div class="day">
+      <div>
+        <h3>Day 6: Testing & Bug Fixes</h3>
+        <div class="todo">✅ Test on 3+ physical devices</div>
+        <div class="todo">✅ Fix crashes, slow loads</div>
+        <div class="todo">✅ Get beta testers from waitlist</div>
+        <div class="todo">✅ Record demo video for store</div>
+      </div>
+      <strong>~4 hours</strong>
+    </div>
+    
+    <div class="day">
+      <div>
+        <h3>Day 7: Store Submission</h3>
+        <div class="todo">✅ App Store Connect setup</div>
+        <div class="todo">✅ Google Play Console setup</div>
+        <div class="todo">✅ Screenshots + description</div>
+        <div class="todo">✅ Submit (expect 1-3 day review)</div>
+      </div>
+      <strong>~3 hours</strong>
+    </div>
+  </div>
+
+  <div class="checkpoint">
+    <strong>Checkpoint 4B (Launch Ready):</strong>
+    <ol>
+      <li>✅ MVP built with core features only</li>
+      <li>✅ Paywall integrated and tested</li>
+      <li>✅ App store assets ready (screenshots, video, description)</li>
+      <li>✅ Privacy policy URL generated</li>
+      <li>✅ Beta tester feedback incorporated</li>
+    </ol>
+  </div>
+
+  <h2>Cursor-Specific Tips</h2>
+  <ul>
+    <li>✅ Use <code>classice @file.js</code> for context-aware edits</li>
+    <li>✅ "Explain this file" when confused by existing code</li>
+    <li>✅ "Create a component for X" to speed up UI work</li>
+    <li>✅ Use inline comments to track TODOs for Claude Code</li>
+  </ul>
+
+  <h2>Next Steps After Launch</h2>
+  <ol>
+    <li><strong>Day 30</strong> - Analyze metrics, iterate on paywall</li>
+    <li><strong>Day 60</strong> - Add 1 new feature based on user feedback</li>
+    <li><strong>Day 90</strong> - Consider ASO improvements, update screenshots</li>
+  </ol>
+
+  <h2>Ready to start building?</h2>
+  <p>This roadmap gets you from idea to launch in 7 days. The video taught us: speed + conversion focus beats perfection every time.</p>
+  
+  <p>Your next 7 days: Build. Ship. Learn.</p>
+</body>
+</html>

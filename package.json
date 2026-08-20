@@ -1,0 +1,24 @@
+{
+  "name": "app-launch-planner",
+  "version": "1.0.0",
+  "description": "A systematic framework for finding, validating, and launching profitable apps",
+  "author": "Don Zzzilla (djphamdev)",
+  "license": "MIT",
+  "scripts": {
+    "start": "echo 'Use Quick Start guide'",
+    "phase1": "echo 'Market Mining - find niches'",
+    "phase2": "echo 'Competitive Analysis'",
+    "phase3": "echo 'Pain Point Validation'",
+    "phase4": "echo 'Build Roadmap'",
+    "preview": "npx serve . -p 3000"
+  },
+  "keywords": [
+    "app-development",
+    "startup",
+    "monetization",
+    "paywall",
+    "validation",
+    "MVP",
+    "indie-hackers"
+  ]
+}

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AppLaunch Planner - Tool Reference</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+    .tool-card { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .tool-card h3 { margin-top: 0; color: #1e40af; }
+    .code { background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 4px; font-family: 'Fira Code', monospace; }
+    .todo { background: #eff6ff; padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Tool Reference</h1>
+  <p>Everything you need to find, validate, build, and launch profitable apps.</p>
+
+  <h2>Market Research Tools</h2>
+  
+  <div class="tool-grid">
+    <div class="tool-card">
+      <h3>📊 AppLaunchPads</h3>
+      <p>Search app categories, see estimated downloads & revenue</p>
+      <ul>
+        <li>Find categories earning $10K+/month</li>
+        <li>Track revenue trends over time</li>
+        <li>Identify growing niches</li>
+      </ul>
+      <p><strong>URL:</strong> <a href="https://applaunchpads.com/app-store-tracker" target="_blank">applaunchpads.com/app-store-tracker</a></p>
+    </div>
+    
+    <div class="tool-card">
+      <h3>🔍 SensorTower</h3>
+      <p>Professional app analytics & ROI tracking</p>
+      <ul>
+        <li>Revenue estimates by app & category</li>
+        <li>ASO keyword research</li>
+        <li>Competitor downloads tracking</li>
+      </ul>
+      <p><strong>URL:</strong> <a href="https://www.sensortower.com" target="_blank">sensortower.com</a></p>
+    </div>
+    
+    <div class="tool-card">
+      <h3>💬 App Store Reviews (Manual)</h3>
+      <p>The best market research is free user feedback</p>
+      <ul>
+        <li>Read 50+ negative reviews per competitor</li>
+        <li>Look for: "too expensive", "confusing", "ads"</li>
+        <li>Every complaint = opportunity</li>
+      </ul>
+      <p><strong>Tip:</strong> Search "reviews" + [app name] in App Store</p>
+    </div>
+  </div>
+
+  <h2>Validation Tools</h2>
+  
+  <div class="tool-grid">
+    <div class="tool-card">
+      <h3>🚀 Carrd.co</h3>
+      <p>Build landing pages in minutes, not days</p>
+      <ul>
+        <li>Billing: $9/year</li>
+        <li>Custom domains</li>
+        <li>Form integrations (Google Sheets, Zapier)</li>
+      </ul>
+      <p><strong>Template:</strong> Use "Product" or "SaaS" templates</p>
+      <p><strong>Key feature:</strong> <code class="code">/waitlist</code> or <code class="code">/pre-order</code> pages</p>
+    </div>
+    
+    <div class="tool-card">
+      <h3>🔍 Google Trends</h3>
+      <p>Check if interest in your solution is growing</p>
+      <ul>
+        <li>Enter keywords like "habit tracker" or "budget app"</li>
+        <li>Look for upward trends over 12 months</li>
+        <li>Compare multiple keywords</li>
+      </ul>
+      <p><strong>URL:</strong> <a href="https://trends.google.com" target="_blank">trends.google.com</a></p>
+    </div>
+    
+    <div class="tool-card">
+      <h3>💳 Stripe Checkout</h3>
+      <p>Accept pre-orders before building</p>
+      <ul>
+        <li>15-minute setup</li>
+        <li>Accept cards, Apple Pay, Google Pay</li>
+        <li>Collect customer emails for waitlist</li>
+      </ul>
+      <p><strong>Pro tip:</strong> Charge $5 for "early bird access"</p>
+    </div>
+  </div>
+
+  <h2>Development Tools</h2>
+  
+  <div class="tool-grid">
+    <div class="tool-card">
+      <h3>🖥 Cursor IDE</h3>
+      <p>Your primary desktop editor (per your preference)</p>
+      <ul>
+        <li>Use for complex UI work & refactoring</li>
+        <li><code class="code">classice @file.js</code> for context-aware edits</li>
+        <li>Inline comments track TODOs for Claude</li>
+      </ul>
+      <p><strong>Model:</strong> Claude-3.5 Sonnet (set in Cursor settings)</p>
+    </div>
+    
+    <div class="tool-card">
+      <h3>🧠 Claude Code</h3>
+      <p>AI pair programmer - debug & quick tasks</p>
+      <ul>
+        <li>Use for: scripts, tests, bug fixes</li>
+        <li>Fast iteration on logic problems</li>
+        <li>Better than Cursor for terminal tasks</li>
+      </ul>
+      <p><strong>Setup:</strong> <code class="code">claude code</code> in terminal</p>
+    </div>
+    
+    <div class="tool-card">
+      <h3>🧪 Testing</h3>
+      <p>Test before you ship</p>
+      <ul>
+        <li><strong>Expo Go</strong> - Test React Native on device</li>
+        <li><strong>Firebase Test Lab</strong> - Device farm testing</li>
+        <li><strong>TestFlight (iOS)</strong> - Beta distribution</li>
+        <li><strong>Google Play Console (Android)</strong> - Internal testing</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Paywall Tools</h2>
+  
+  <div class="tool-grid">
+    <div class="tool-card">
+      <h3>💰 RevenueCat</h3>
+      <p>Cross-platform subscription management</p>
+      <ul>
+        <li>iOS & Android in one API</li>
+        <li>Web support added recently</li>
+        <li>Analytics + paywall testing A/B</li>
+      </ul>
+      <p><strong>Key insight:</strong> "Unlock lifetime insights" converts better than "Get all features"</p>
+      <p><strong>URL:</strong> <a href="https://www.revenuecat.com" target="_blank">revenuecat.com</a></p>
+    </div>
+    
+    <div class="tool-card">
+      <h3>🏪 App Store Connect</h3>
+      <p>Apple's official developer portal</p>
+      <ul>
+        <li>Submit to App Store</li>
+        <li>Manage in-app purchases</li>
+        <li>View analytics & sales</li>
+      </ul>
+    </div>
+    
+    <div class="tool-card">
+      <h3>🤖 Google Play Console</h3>
+      <p>Android app publishing & monetization</p>
+      <ul>
+        <li>Internal testing track</li>
+        <li>Google Play Billing integration</li>
+        <li>Release management</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Launch & Growth</h2>
+  
+  <div class="tool-grid">
+    <div class="tool-card">
+      <h3>📈 App Store Optimization</h3>
+      <ul>
+        <li>Keywords: Include in title & subtitle</li>
+        <li>Icon: Simple, memorable, works at 20x20px</li>
+        <li>Screenshots: Show problem → solution → outcome</li>
+        <li>Video: 15-30 sec demo on first loop</li>
+      </ul>
+    </div>
+    
+    <div class="tool-card">
+      <h3>📱 Social Channels</h3>
+      <ul>
+        <li>Reddit: r/AppIdeas, r/IndieHackers</li>
+        <li>Twitter: Tweet launches, engage with users</li>
+        <li>Product Hunt: Launch day spotlight</li>
+        <li>Facebook Groups: Niche communities for feedback</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="todo">
+    <h3>Quick Setup Checklist</h3>
+    <ol>
+      <li>✅ GitHub repo: <code class="code">git clone https://github.com/djphamdev/app-launch-planner.git</code></li>
+      <li>✅ Set up Cursor with Claude-3.5 model</li>
+      <li>✅ Create RevenueCat account for subscription testing</li>
+      <li>✅ Register for Apple Developer Program ($99/yr)</li>
+      <li>✅ Register for Google Play Developer ($25 one-time)</li>
+    </ol>
+  </div>
+
+  <p><strong>Navigation:</strong> Use the phase links at the top to move through the framework.</p>
+</body>
+</html>

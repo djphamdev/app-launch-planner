@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Launch Planner</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; 
+      line-height: 1.6; 
+      color: #1f2937;
+      background: #f9fafb;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      border-radius: 12px 12px 0 0;
+      margin-bottom: 2rem;
+    }
+    
+    .header h1 { margin: 0; font-size: 1.5rem; }
+    .header nav a { 
+      color: white; 
+      text-decoration: none; 
+      margin-left: 1.5rem; 
+      font-weight: 500;
+    }
+    .header nav a:hover { text-decoration: underline; }
+    
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: white;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+    
+    .hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .hero .subtitle { font-size: 1.2rem; color: #6b7280; }
+    
+    /* Problem Statement */
+    .problem {
+      background: #fef2f2;
+      border-left: 6px solid #ef4444;
+      padding: 1.5rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 2rem;
+    }
+    
+    .problem h2 { margin-top: 0; color: #991b1b; }
+    
+    /* Framework */
+    .framework h2 { margin-bottom: 1.5rem; }
+    
+    .phase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .phase-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .phase-number {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      background: #4f46e5;
+      color: white;
+      border-radius: 50%;
+      alignment: center;
+      line-height: 32px;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .phase-card h3 { margin: 0.5rem 0 1rem; }
+    
+    /* CTA */
+    .cta {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      color: white;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+    
+    .cta h2 { margin-top: 0; }
+    .cta a {
+      color: white;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: #6b7280;
+      margin-top: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+      .header { flex-direction: column; text-align: center; }
+      .header nav { margin-top: 1rem; }
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="container">
+    <div class="header">
+      <h1>AppLaunch Planner</h1>
+      <nav>
+        <a href="/app-launch-planner/">Home</a>
+        <a href="/app-launch-planner/quick-start.html">Quick Start</a>
+        <a href="/app-launch-planner/tools.html">Tools</a>
+        <a href="/app-launch-planner/phases/1-market-mining.html">Phase 1</a>
+      </nav>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Build Profitable Apps, Fast</h1>
+      <p class="subtitle">Systematic framework to find, validate, and launch apps that convert visitors into paying users</p>
+    </section>
+
+    <section class="problem">
+      <h2>Why This Exists</h2>
+      <p>Most app founders spend months building something nobody wants. They fail because they:</p>
+      <ul>
+        <li><strong>Build on assumptions</strong> instead of market data</li>
+        <li><strong>Enter broad categories</strong> without a specific audience</li>
+        <li><strong>Skip validation</strong> and discover their wrong idea weeks later</li>
+      </ul>
+      <p>This planner fixes all three.</p>
+    </section>
+
+    <section class="framework">
+      <h2>The 4-Phase Framework</h2>
+      <p>Each phase builds on the last. Complete one before moving to the next.</p>
+      
+      <div class="phase-grid">
+        <div class="phase-card">
+          <div class="phase-number">1</div>
+          <h3>Market Mining</h3>
+          <p>Find app niches where people already pay $10K+/month</p>
+          <a href="/app-launch-planner/phases/1-market-mining.html">Start →</a>
+        </div>
+        
+        <div class="phase-card">
+          <div class="phase-number">2</div>
+          <h3>Competitive Analysis</h3>
+          <p>Analyze competitors, find weaknesses to exploit</p>
+          <a href="/app-launch-planner/phases/2-competitive-analysis.html">Start →</a>
+        </div>
+        
+        <div class="phase-card">
+          <div class="phase-number">3</div>
+          <h3>Pain Point Validation</h3>
+          <p>Test your idea with a landing page before building</p>
+          <a href="/app-launch-planner/phases/3-pain-point-validation.html">Start →</a>
+        </div>
+        
+        <div class="phase-card">
+          <div class="phase-number">4</div>
+          <h3>Build Roadmap</h3>
+          <p>7-day plan to build & launch your MVP</p>
+          <a href="/app-launch-planner/phases/4-build-roadmap.html">Start →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <h2>Ready to build something profitable?</h2>
+      <p>Start with <a href="/app-launch-planner/quick-start.html">Quick Start</a> - the fastest path from idea to launch</p>
+      <p>Or dive into <a href="/app-launch-planner/tools.html">Tools Reference</a> for all the resources you need</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>AppLaunch Planner — Build better apps, faster</p>
+    <p>Based on insights from <a href="https://www.youtube.com/watch?v=vZXn_BSi5AE" target="_blank" rel="noopener">Paywall Strategies video</a> and <a href="https://www.youtube.com/watch?v=eVrUkmE-j7g" target="_blank" rel="noopener">App Validation video</a></p>
+  </footer>
+</body>
+</html>

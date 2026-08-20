@@ -1,0 +1,13 @@
+title: App Launch Planner
+description: Build apps that convert. A systematic framework for finding, validating, and launching profitable apps.
+url: "https://djphamdev.github.io"
+baseurl: "/app-launch-planner"
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
