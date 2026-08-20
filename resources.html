@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resources - App Launch Planner</title>
+  <script src="/app-launch-planner/app-core.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; max-width: 1100px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .resource-section { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+    .resource-section h2 { margin-top: 0; color: #1e40af; display: flex; align-items: center; gap: 0.5rem; }
+    .resource-section h3 { color: #374151; margin-top: 1.5rem; }
+    .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .resource-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; transition: all 0.2s; }
+    .resource-card:hover { border-color: #4f46e5; box-shadow: 0 4px 12px rgba(79,70,229,0.1); }
+    .resource-card h4 { margin: 0 0 0.5rem; color: #1f2937; }
+    .resource-card p { margin: 0 0 1rem; color: #6b7280; font-size: 0.9rem; }
+    .resource-card .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .resource-card .tag { background: #e5e7eb; color: #374151; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; }
+    .resource-card .tag.primary { background: #4f46e5; color: white; }
+    .resource-card a { color: #4f46e5; text-decoration: none; font-weight: 500; }
+    .resource-card a:hover { text-decoration: underline; }
+    .alternative-box { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .alternative-box h4 { margin: 0 0 0.5rem; color: #92400e; }
+    .alternative-box ul { margin: 0; padding-left: 1.2rem; }
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: flex-start; gap: 0.75rem; }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist input[type="checkbox"] { margin-top: 0.25rem; width: 1.1rem; height: 1.1rem; accent-color: #4f46e5; flex-shrink: 0; }
+    .phase-resources { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .phase-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; border-top: 4px solid; }
+    .phase-card.phase1 { border-top-color: #4f46e5; }
+    .phase-card.phase2 { border-top-color: #10b981; }
+    .phase-card.phase3 { border-top-color: #8b5cf6; }
+    .phase-card.phase4 { border-top-color: #f59e0b; }
+    .phase-card h3 { margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .phase-card ul { margin: 0; padding-left: 1.2rem; font-size: 0.9rem; }
+    .phase-card li { margin: 0.5rem 0; }
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; margin: -2rem -2rem 2rem; border-radius: 12px 12px 0 0; }
+    .nav-bar a { color: white; text-decoration: none; margin-left: 1rem; opacity: 0.9; }
+    .nav-bar a:hover { opacity: 1; text-decoration: underline; }
+    .toc { background: #f9fafb; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+    .toc h3 { margin-top: 0; }
+    .toc ul { list-style: none; padding: 0; columns: 2; column-gap: 2rem; }
+    .toc li { margin: 0.5rem 0; }
+    .toc a { color: #4f46e5; text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    @media (max-width: 768px) { .toc ul { columns: 1; } }
+  </style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <h1 style="margin:0;">📚 Resources Library</h1>
+    <div>
+      <a href="/app-launch-planner/">Home</a>
+      <a href="/app-launch-planner/calculators.html">Calculators</a>
+      <a href="/app-launch-planner/legal.html">Legal/IP</a>
+      <a href="/app-launch-planner/prompts.html">Prompt Eng</a>
+      <a href="/app-launch-planner/notes.html">Notes</a>
+      <a href="/app-launch-planner/validator.html">Validator</a>
+      <a href="/app-launch-planner/resources.html">Resources</a>
+    </div>
+  </nav>
+
+  <main style="padding: 0 2rem 2rem;">
+    <h1 style="text-align:center; margin-bottom:0.5rem;">Resource Library</h1>
+    <p style="text-align:center; color:#6b7280; margin-bottom:2rem;">Curated tools, data sources, and alternatives for every stage. All links verified.</p>
+
+    <div class="toc">
+      <h3>📋 Quick Navigation</h3>
+      <ul>
+        <li><a href="#market-data">Market Data & Research</a></li>
+        <li><a href="#validation-tools">Validation & Landing Pages</a></li>
+        <li><a href="#dev-tools">Development (iOS/Android)</a></li>
+        <li><a href="#backend">Backend & Infrastructure</a></li>
+        <li><a href="#monetization">Monetization & Paywalls</a></li>
+        <li><a href="#analytics">Analytics & ASO</a></li>
+        <li><a href="#design">Design & Prototyping</a></li>
+        <li><a href="#learning">Learning & Communities</a></li>
+        <li><a href="#phase-resources">Phase-Specific Resources</a></li>
+      </ul>
+    </div>
+
+    <!-- Market Data -->
+    <section class="resource-section" id="market-data">
+      <h2>📊 Market Data & Research</h2>
+      <p>Primary sources for market sizing, competitor intelligence, and trend analysis.</p>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>AppLaunchPads App Store Tracker</h4>
+          <p>Search categories, see estimated downloads & revenue. Free tier available.</p>
+          <div class="tags"><span class="tag primary">Primary</span><span class="tag">Free tier</span><span class="tag">Revenue estimates</span></div>
+          <a href="https://applaunchpads.com/app-store-tracker" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Sensor Tower</h4>
+          <p>Professional app analytics, revenue estimates, keyword research, competitor tracking.</p>
+          <div class="tags"><span class="tag primary">Primary</span><span class="tag">Paid</span><span class="tag">Enterprise</span></div>
+          <a href="https://sensortower.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>data.ai (formerly App Annie)</h4>
+          <p>Market intelligence, download/revenue estimates, usage metrics, competitor benchmarks.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">Paid</span><span class="tag">Deep data</span></div>
+          <a href="https://data.ai" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>AppTweak</h4>
+          <p>ASO-focused: keyword research, competitor tracking, market intelligence.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">ASO focus</span><span class="tag">Free trial</span></div>
+          <a href="https://apptweak.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Mobile Action</h4>
+          <p>Keyword intelligence, competitor analysis, market trends, ASO recommendations.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">ASO</span><span class="tag">Freemium</span></div>
+          <a href="https://mobileaction.co" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>42matters</h4>
+          <p>API-first app market data. 2M+ apps tracked. Good for custom analysis.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">API access</span><span class="tag">Developer-friendly</span></div>
+          <a href="https://42matters.com" target="_blank">Visit →</a>
+        </div>
+      </div>
+
+      <div class="alternative-box">
+        <h4>🔍 Free Alternatives for Market Research</h4>
+        <ul>
+          <li><strong>App Store / Play Store directly:</strong> Search category, sort by "Top Grossing" - manual but free</li>
+          <li><strong>Google Trends:</strong> trends.google.com - compare search interest over time for keywords</li>
+          <li><strong>SimilarWeb (free):</strong> similarweb.com - website/app traffic estimates (limited free)</li>
+          <li><strong>AppShopper:</strong> appshopper.com - price history, rank history for iOS/Mac</li>
+          <li><strong>SteamSpy / SteamDB:</strong> For desktop/game market analogs</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Validation Tools -->
+    <section class="resource-section" id="validation-tools">
+      <h2>✅ Validation & Landing Pages</h2>
+      <p>Test demand before building. Fast, cheap, no-code.</p>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>Carrd.co</h4>
+          <p>One-page sites in minutes. $9/year pro. Forms, Stripe, custom domains.</p>
+          <div class="tags"><span class="tag primary">Recommended</span><span class="tag">$9/yr</span><span class="tag">Stripe</span></div>
+          <a href="https://carrd.co" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Framer</h4>
+          <p>Interactive prototypes & sites. Free tier generous. Great for demo videos.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">Free tier</span><span class="tag">Interactive</span></div>
+          <a href="https://framer.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Webflow</h4>
+          <p>Full CMS + hosting. Steeper learning curve. Powerful for complex validation funnels.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">CMS</span><span class="tag">Complex</span></div>
+          <a href="https://webflow.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Unbounce</h4>
+          <p>Landing page builder with A/B testing. Conversion-focused templates.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">A/B testing</span><span class="tag">Paid</span></div>
+          <a href="https://unbounce.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Typeform / Tally</h4>
+          <p>Beautiful surveys for validation interviews. Tally is free & powerful.</p>
+          <div class="tags"><span class="tag">Surveys</span><span class="tag">Tally=Free</span><span class="tag">Typeform=Paid</span></div>
+          <a href="https://tally.so" target="_blank">Tally (Free) →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Stripe Payment Links</h4>
+          <p>Accept pre-orders in 5 min. No code. Dashboard for tracking.</p>
+          <div class="tags"><span class="tag primary">Pre-orders</span><span class="tag">No code</span><span class="tag">2.9%+30¢</span></div>
+          <a href="https://stripe.com/payment-links" target="_blank">Visit →</a>
+        </div>
+      </div>
+
+      <div class="alternative-box">
+        <h4>💡 Validation Channels (Free Traffic Sources)</h4>
+        <ul>
+          <li><strong>Reddit:</strong> r/AppIdeas, r/IndieHackers, r/SideProject, niche subreddits</li>
+          <li><strong>Facebook Groups:</strong> Search "[niche] community", "[problem] support group"</li>
+          <li><strong>Twitter/X:</strong> Build in public, engage with target audience, use relevant hashtags</li>
+          <li><strong>Product Hunt:</strong> Upcoming page (free), Ship page ($79)</li>
+          <li><strong>Indie Hackers:</strong> indiehackers.com - community of builders, feedback threads</li>
+          <li><strong>BetaList:</strong> betalist.com - submit for early adopters</li>
+          <li><strong>Quora:</strong> Answer questions in your niche, link to landing page in bio</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Development Tools -->
+    <section class="resource-section" id="dev-tools">
+      <h2>🛠️ Development (iOS & Android)</h2>
+      <p>Native and cross-platform tools. Choose based on team, timeline, budget.</p>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>iOS Native: Xcode + Swift/SwiftUI</h4>
+          <p>Best performance, latest APIs, App Store approval easiest. Mac required.</p>
+          <div class="tags"><span class="tag primary">Native iOS</span><span class="tag">Free</span><span class="tag">Mac only</span></div>
+          <a href="https://developer.apple.com/xcode/" target="_blank">Xcode →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Android Native: Android Studio + Kotlin/Jetpack Compose</h4>
+          <p>Best Android performance, Material 3, largest device reach. Cross-platform IDE.</p>
+          <div class="tags"><span class="tag primary">Native Android</span><span class="tag">Free</span><span class="tag">Cross-platform</span></div>
+          <a href="https://developer.android.com/studio" target="_blank">Android Studio →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Flutter (Dart)</h4>
+          <p>Single codebase, iOS/Android/Web/Desktop. Great performance, growing ecosystem. Google-backed.</p>
+          <div class="tags"><span class="tag">Cross-platform</span><span class="tag">Free</span><span class="tag">Google</span></div>
+          <a href="https://flutter.dev" target="_blank">Flutter →</a>
+        </div>
+        <div class="resource-card">
+          <h4>React Native</h4>
+          <p>JavaScript/TypeScript, huge ecosystem, Expo for managed workflow. Meta-backed.</p>
+          <div class="tags"><span class="tag">Cross-platform</span><span class="tag">JS/TS</span><span class="tag">Expo</span></div>
+          <a href="https://reactnative.dev" target="_blank">React Native →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Expo (React Native)</h4>
+          <p>Managed workflow, OTA updates, native modules via config plugins. Fastest RN start.</p>
+          <div class="tags"><span class="tag">RN wrapper</span><span class="tag">Managed</span><span class="tag">EAS Build</span></div>
+          <a href="https://expo.dev" target="_blank">Expo →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Tauri (Rust + Web)</h4>
+          <p>Tiny binaries, Rust backend, web frontend. Great for desktop, mobile in beta.</p>
+          <div class="tags"><span class="tag">Emerging</span><span class="tag">Rust</span><span class="tag">Small size</span></div>
+          <a href="https://tauri.app" target="_blank">Tauri →</a>
+        </div>
+      </div>
+
+      <div class="alternative-box">
+        <h4>🎯 Choosing Your Stack</h4>
+        <ul>
+          <li><strong>Solo dev, iOS first:</strong> SwiftUI + SwiftData (modern, productive)</li>
+          <li><strong>Solo dev, both platforms:</strong> Flutter (single codebase, great tooling) or React Native + Expo (if you know JS)</li>
+          <li><strong>Team with web devs:</strong> React Native + Expo (shared skills)</li>
+          <li><strong>Performance-critical (games, AR):</strong> Native (Swift/Kotlin) or Unity/Godot</li>
+          <li><strong>Budget < $10K, need both stores fast:</strong> Flutter or Expo</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Backend -->
+    <section class="resource-section" id="backend">
+      <h2>☁️ Backend & Infrastructure</h2>
+      <p>Serverless first. Don't manage servers until you have traction.</p>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>Supabase (PostgreSQL)</h4>
+          <p>Open-source Firebase alternative. Auth, DB, Realtime, Storage, Edge Functions. Generous free tier.</p>
+          <div class="tags"><span class="tag primary">Recommended</span><span class="tag">PostgreSQL</span><span class="tag">Free tier</span></div>
+          <a href="https://supabase.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Firebase</h4>
+          <p>Auth, Firestore, Functions, Hosting, Analytics. Mature, great docs, vendor lock-in risk.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">Google</span><span class="tag">NoSQL</span></div>
+          <a href="https://firebase.google.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Appwrite</h4>
+          <p>Self-hostable backend. Auth, DB, Functions, Storage. Open source. Good for privacy.</p>
+          <div class="tags"><span class="tag">Self-hosted</span><span class="tag">Open source</span><span class="tag">Docker</span></div>
+          <a href="https://appwrite.io" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Convex</h4>
+          <p>Real-time backend with TypeScript functions. Reactive by default. Great DX.</p>
+          <div class="tags"><span class="tag">Real-time</span><span class="tag">TypeScript</span><span class="tag">New</span></div>
+          <a href="https://convex.dev" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>PocketBase</h4>
+          <p>Single Go binary. Auth, DB, Realtime, File storage. Embeddable. Very fast.</p>
+          <div class="tags"><span class="tag">Lightweight</span><span class="tag">Go</span><span class="tag">Single binary</span></div>
+          <a href="https://pocketbase.io" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Cloudflare Workers + D1/KV/R2</h4>
+          <p>Edge computing, SQLite (D1), Key-Value, Object storage. Cheap at scale.</p>
+          <div class="tags"><span class="tag">Edge</span><span class="tag">Cheap</span><span class="tag">Workers</span></div>
+          <a href="https://workers.cloudflare.com" target="_blank">Visit →</a>
+        </div>
+      </div>
+
+      <div class="alternative-box">
+        <h4>💰 Free Tier Comparison</h4>
+        <ul>
+          <li><strong>Supabase:</strong> 500MB DB, 1GB file storage, 50K MAU, 2M function invocations</li>
+          <li><strong>Firebase:</strong> 1GB Firestore, 10GB hosting, 125K monthly auth, 2M function invocations</li>
+          <li><strong>Appwrite Cloud:</strong> 1GB DB, 1GB storage, 1M function executions</li>
+          <li><strong>Convex:</strong> 1GB DB, 10GB bandwidth, 1M function calls</li>
+          <li><strong>Cloudflare:</strong> 100K requests/day Workers, 5GB R2, 5GB D1 - very generous</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Monetization -->
+    <section class="resource-section" id="monetization">
+      <h2>💰 Monetization & Paywalls</h2>
+      <p>Based on video research: hard paywalls, "Unlock lifetime insights" copy, platform-specific buttons.</p>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>RevenueCat</h4>
+          <p>Cross-platform subscriptions. iOS/Android/Web. A/B testing paywalls. Analytics. Free tier: $2.5K/mo revenue.</p>
+          <div class="tags"><span class="tag primary">Recommended</span><span class="tag">Cross-platform</span><span class="tag">A/B testing</span></div>
+          <a href="https://revenuecat.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Superwall</h4>
+          <p>Remote paywall configuration. No app updates needed for paywall changes. Visual editor.</p>
+          <div class="tags"><span class="tag">Paywall CMS</span><span class="tag">Remote config</span><span class="tag">Paid</span></div>
+          <a href="https://superwall.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Adapty</h4>
+          <p>Subscription infrastructure + paywall A/B testing. Cohort analytics. Predictive LTV.</p>
+          <div class="tags"><span class="tag">Analytics</span><span class="tag">A/B testing</span><span class="tag">Predictive</span></div>
+          <a href="https://adapty.io" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Glassfy</h4>
+          <p>Open-source subscription backend. Self-hostable. Lower cost at scale.</p>
+          <div class="tags"><span class="tag">Open source</span><span class="tag">Self-hosted</span><span class="tag">Cost-effective</span></div>
+          <a href="https://glassfy.io" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>StoreKit 2 / Google Play Billing v5</h4>
+          <p>Native APIs. No third-party dependency. More work but full control.</p>
+          <div class="tags"><span class="tag">Native</span><span class="tag">No fees</span><span class="tag">More work</span></div>
+          <a href="https://developer.apple.com/storekit/" target="_blank">StoreKit 2 →</a>
+        </div>
+      </div>
+
+      <div class="alternative-box">
+        <h4>🎯 Paywall Best Practices (From Video Research)</h4>
+        <ul>
+          <li><strong>Show paywall Day 0:</strong> 90%+ of trials start on first open</li>
+          <li><strong>Hard paywall in fitness/health:</strong> Test removing "X" button</li>
+          <li><strong>Button text:</strong> iOS = "Continue", Android = "Start free trial"</li>
+          <li><strong>Winning copy:</strong> "Unlock lifetime insights" beats "Get all features" (4/5 tests)</li>
+          <li><strong>Video on paywall:</strong> 2.5% → 4.7% → 6.8% conversion progression</li>
+          <li><strong>Social proof:</strong> "Join 10,000+ users" above the fold</li>
+          <li><strong>3 plans optimal:</strong> Weekly + Monthly + Annual (with trial on weekly)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Analytics -->
+    <section class="resource-section" id="analytics">
+      <h2>📈 Analytics & ASO</h2>
+      <p>Measure, iterate, grow organically.</p>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>PostHog (Self-hosted)</h4>
+          <p>Product analytics, feature flags, session replay. Open source. GDPR-friendly. Free on own infra.</p>
+          <div class="tags"><span class="tag primary">Recommended</span><span class="tag">Open source</span><span class="tag">Self-hosted</span></div>
+          <a href="https://posthog.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Mixpanel</h4>
+          <p>Event-based analytics, funnels, retention. Generous free tier (100K events/mo).</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">Events</span><span class="tag">Free tier</span></div>
+          <a href="https://mixpanel.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Amplitude</h4>
+          <p>Behavioral analytics, user paths, experimentation. 10M events/mo free.</p>
+          <div class="tags"><span class="tag">Alternative</span><span class="tag">Behavioral</span><span class="tag">Free tier</span></div>
+          <a href="https://amplitude.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>App Store Connect / Play Console</h4>
+          <p>Native analytics: impressions, page views, installs, sales, retention, crashes.</p>
+          <div class="tags"><span class="tag primary">Native</span><span class="tag">Free</span><span class="tag">Required</span></div>
+          <a href="https://appstoreconnect.apple.com" target="_blank">App Store Connect →</a>
+        </div>
+        <div class="resource-card">
+          <h4>AppTweak / Mobile Action</h4>
+          <p>ASO: keyword tracking, competitor monitoring, review analysis, download estimates.</p>
+          <div class="tags"><span class="tag">ASO</span><span class="tag">Paid</span><span class="tag">Keyword tracking</span></div>
+          <a href="https://apptweak.com" target="_blank">AppTweak →</a>
+        </div>
+        <div class="resource-card">
+          <h4>AppFollow</h4>
+          <p>Review management, reply to reviews, sentiment analysis, competitor reviews.</p>
+          <div class="tags"><span class="tag">Reviews</span><span class="tag">Reply</span><span class="tag">Sentiment</span></div>
+          <a href="https://appfollow.io" target="_blank">Visit →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Design -->
+    <section class="resource-section" id="design">
+      <h2>🎨 Design & Prototyping</h2>
+      <p>Design systems, icons, prototypes. Speed matters.</p>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>Figma</h4>
+          <p>Industry standard. Free for individuals. Design systems, prototyping, handoff.</p>
+          <div class="tags"><span class="tag primary">Standard</span><span class="tag">Free tier</span><span class="tag">Collaboration</span></div>
+          <a href="https://figma.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>SF Symbols / Material Icons</h4>
+          <p>Official Apple/Google icon sets. Free, consistent, accessible, updated yearly.</p>
+          <div class="tags"><span class="tag">Icons</span><span class="tag">Free</span><span class="tag">Official</span></div>
+          <a href="https://developer.apple.com/sf-symbols/" target="_blank">SF Symbols →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Heroicons / Lucide / Phosphor</h4>
+          <p>Beautiful open-source icon sets. MIT license. React/Swift/Flutter packages available.</p>
+          <div class="tags"><span class="tag">Open source</span><span class="tag">MIT</span><span class="tag">Multi-platform</span></div>
+          <a href="https://heroicons.com" target="_blank">Heroicons →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Apple Human Interface Guidelines</h4>
+          <p>Design principles, patterns, specifications. Required reading for App Store approval.</p>
+          <div class="tags"><span class="tag primary">Required</span><span class="tag">Apple</span><span class="tag">Free</span></div>
+          <a href="https://developer.apple.com/design/human-interface-guidelines/" target="_blank">Read →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Material Design 3</h4>
+          <p>Google's design system. Color, typography, motion, components. Figma kit available.</p>
+          <div class="tags"><span class="tag primary">Required</span><span class="tag">Google</span><span class="tag">Free</span></div>
+          <a href="https://m3.material.io" target="_blank">Read →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Remove.bg / Photopea</h4>
+          <p>Free background removal / browser-based Photoshop alternative. Quick asset editing.</p>
+          <div class="tags"><span class="tag">Assets</span><span class="tag">Free</span><span class="tag">Browser</span></div>
+          <a href="https://photopea.com" target="_blank">Photopea →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Learning -->
+    <section class="resource-section" id="learning">
+      <h2>📖 Learning & Communities</h2>
+      <p>Stay current. Learn from builders who've done it.</p>
+
+      <div class="resource-grid">
+        <div class="resource-card">
+          <h4>Indie Hackers</h4>
+          <p>Community of profitable founders. Interviews, forums, meetups. Stripe-owned.</p>
+          <div class="tags"><span class="tag primary">Community</span><span class="tag">Free</span><span class="tag">Interviews</span></div>
+          <a href="https://indiehackers.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>App Masters (Steve P. Young)</h4>
+          <p>Podcast + YouTube. 500+ episodes interviewing successful app founders. Data-driven.</p>
+          <div class="tags"><span class="tag">Podcast</span><span class="tag">Video</span><span class="tag">Free</span></div>
+          <a href="https://appmasters.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>App Launchpad (YouTube)</h4>
+          <p>Market research, validation, niche finding. The source of our Phase 1-2 methodology.</p>
+          <div class="tags"><span class="tag">YouTube</span><span class="tag">Validation</span><span class="tag">Free</span></div>
+          <a href="https://youtube.com/@applaunchpad" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>RevenueCat Blog</h4>
+          <p>Deep dives on subscription benchmarks, paywall optimization, pricing strategy.</p>
+          <div class="tags"><span class="tag">Blog</span><span class="tag">Subscriptions</span><span class="tag">Data-driven</span></div>
+          <a href="https://revenuecat.com/blog" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Swift by Sundell / Hacking with Swift</h4>
+          <p>Best iOS dev tutorials. Free. Paul Hudson's 100 Days of SwiftUI.</p>
+          <div class="tags"><span class="tag">iOS</span><span class="tag">SwiftUI</span><span class="tag">Free</span></div>
+          <a href="https://hackingwithswift.com" target="_blank">Visit →</a>
+        </div>
+        <div class="resource-card">
+          <h4>Android Developers Blog / Medium</h4>
+          <p>Official Android updates, Jetpack Compose guides, performance tips.</p>
+          <div class="tags"><span class="tag">Android</span><span class="tag">Compose</span><span class="tag">Official</span></div>
+          <a href="https://android-developers.googleblog.com" target="_blank">Visit →</a>
+        </div>
+      </div>
+
+      <div class="alternative-box">
+        <h4>🎥 YouTube Channels for App Builders</h4>
+        <ul>
+          <li><strong>App Masters</strong> - Steve P. Young, interviews, paywall strategies</li>
+          <li><strong>App Launchpad</strong> - Market research, validation, niche finding</li>
+          <li><strong>RevenueCat</strong> - Subscription benchmarks, paywall tests</li>
+          <li><strong>Sebastian Borgeaud</strong> - ASO, growth, app marketing</li>
+          <li><strong>Simon Høiberg</strong> - SaaS building, marketing, validation</li>
+          <li><strong>Pat Walls (Starter Story)</strong> - Founder interviews, revenue breakdowns</li>
+          <li><strong>Y Combinator</strong> - Startup advice, applies to apps too</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Phase-Specific Resources -->
+    <section class="resource-section" id="phase-resources">
+      <h2>🗺️ Phase-Specific Resources</h2>
+      <p>Curated for each stage of the 4-phase framework.</p>
+
+      <div class="phase-resources">
+        <div class="phase-card phase1">
+          <h3>🔎 Phase 1: Market Mining</h3>
+          <ul>
+            <li>AppLaunchPads Tracker</li>
+            <li>Sensor Tower (free trial)</li>
+            <li>Google Trends</li>
+            <li>App Store Top Grossing lists</li>
+            <li>Reddit: r/AppIdeas, niche subs</li>
+            <li>Review analysis: AppBot, AppFollow</li>
+          </ul>
+        </div>
+        <div class="phase-card phase2">
+          <h3>🔍 Phase 2: Competitive Analysis</h3>
+          <ul>
+            <li>AppTweak / Mobile Action (ASO)</li>
+            <li>AppStore/PlayStore review scraping</li>
+            <li>Sensor Tower keyword data</li>
+            <li>Competitor websites + landing pages</li>
+            <li>Facebook Ad Library (their ads)</li>
+            <li>SimilarWeb (web traffic proxy)</li>
+          </ul>
+        </div>
+        <div class="phase-card phase3">
+          <h3>💡 Phase 3: Validation</h3>
+          <ul>
+            <li>Carrd.co (landing pages)</li>
+            <li>Tally.so (surveys - free)</li>
+            <li>Stripe Payment Links (pre-orders)</li>
+            <li>Reddit/FB Groups (traffic)</li>
+            <li>Google Forms (free surveys)</li>
+            <li>Calendly (user interviews)</li>
+          </ul>
+        </div>
+        <div class="phase-card phase4">
+          <h3>🚀 Phase 4: Build & Launch</h3>
+          <ul>
+            <li>RevenueCat (paywalls)</li>
+            <li>Supabase/Firebase (backend)</li>
+            <li>TestFlight / Play Internal Testing</li>
+            <li>Fastlane (CI/CD automation)</li>
+            <li>App Store Connect / Play Console</li>
+            <li>Figma (store assets)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Checklist -->
+    <section class="resource-section">
+      <h2>✅ Resource Setup Checklist</h2>
+      <p>Complete before starting Phase 1.</p>
+      
+      <ul class="checklist">
+        <li><input type="checkbox" id="rc1" onchange="saveRC('rc1')"> <label for="rc1">Create AppLaunchPads account (free tier)</label></li>
+        <li><input type="checkbox" id="rc2" onchange="saveRC('rc2')"> <label for="rc2">Sign up for Sensor Tower / AppTweak trial</label></li>
+        <li><input type="checkbox" id="rc3" onchange="saveRC('rc3')"> <label for="rc3">Create Carrd.co account (pro $9/yr)</label></li>
+        <li><input type="checkbox" id="rc4" onchange="saveRC('rc4')"> <label for="rc4">Set up Stripe account for pre-orders</label></li>
+        <li><input type="checkbox" id="rc5" onchange="saveRC('rc5')"> <label for="rc5">Create Supabase project (free tier)</label></li>
+        <li><input type="checkbox" id="rc6" onchange="saveRC('rc6')"> <label for="rc6">Create RevenueCat account (free tier)</label></li>
+        <li><input type="checkbox" id="rc7" onchange="saveRC('rc7')"> <label for="rc7">Join Indie Hackers community</label></li>
+        <li><input type="checkbox" id="rc8" onchange="saveRC('rc8')"> <label for="rc8">Subscribe to App Masters podcast</label></li>
+        <li><input type="checkbox" id="rc9" onchange="saveRC('rc9')"> <label for="rc9">Bookmark Apple HIG & Material Design 3</label></li>
+        <li><input type="checkbox" id="rc10" onchange="saveRC('rc10')"> <label for="rc10">Set up Figma account (free)</label></li>
+        <li><input type="checkbox" id="rc11" onchange="saveRC('rc11')"> <label for="rc11">Install Xcode (Mac) / Android Studio</label></li>
+        <li><input type="checkbox" id="rc12" onchange="saveRC('rc12')"> <label for="rc12">Create Apple Developer account ($99/yr)</label></li>
+        <li><input type="checkbox" id="rc13" onchange="saveRC('rc13')"> <label for="rc13">Create Google Play Developer account ($25)</label></li>
+        <li><input type="checkbox" id="rc14" onchange="saveRC('rc14')"> <label for="rc14">Set up PostHog Cloud (free) or self-host</label></li>
+        <li><input type="checkbox" id="rc15" onchange="saveRC('rc15')"> <label for="rc15">Join 3 relevant Reddit/FB communities</label></li>
+      </ul>
+    </section>
+
+    <p style="text-align:center; margin-top:2rem; color:#6b7280;">
+      <strong>Live:</strong> <a href="https://djphamdev.github.io/app-launch-planner/">djphamdev.github.io/app-launch-planner</a>
+    </p>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const checks = JSON.parse(localStorage.getItem('applaunch_resource_checks') || '{}');
+      Object.keys(checks).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = checks[id];
+      });
+    });
+
+    function saveRC(id) {
+      const checks = JSON.parse(localStorage.getItem('applaunch_resource_checks') || '{}');
+      checks[id] = document.getElementById(id).checked;
+      localStorage.setItem('applaunch_resource_checks', JSON.stringify(checks));
+    }
+  </script>
+</body>
+</html>

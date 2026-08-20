@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Idea Validator - App Launch Planner</title>
+  <script src="/app-launch-planner/app-core.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 1100px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .validator-layout { display: grid; grid-template-columns: 1fr 420px; gap: 2rem; }
+    @media (max-width: 950px) { .validator-layout { grid-template-columns: 1fr; } }
+    
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; margin: -2rem -2rem 2rem; border-radius: 12px 12px 0 0; }
+    .nav-bar a { color: white; text-decoration: none; margin-left: 1rem; opacity: 0.9; }
+    .nav-bar a:hover { opacity: 1; text-decoration: underline; }
+    
+    .card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; margin-bottom: 1.5rem; }
+    .card h2 { margin-top: 0; color: #1e40af; display: flex; align-items: center; gap: 0.5rem; }
+    .card h3 { color: #374151; margin-top: 1.5rem; }
+    
+    .input-row { display: flex; gap: 1rem; margin: 0.75rem 0; flex-wrap: wrap; }
+    .input-group { flex: 1; min-width: 180px; }
+    .input-group label { display: block; font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 0.6rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; font-family: inherit; }
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+    .input-group textarea { min-height: 80px; resize: vertical; }
+    
+    .score-display { text-align: center; padding: 2rem; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; border: 2px solid #e5e7eb; }
+    .score-circle { width: 140px; height: 140px; border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; position: relative; background: conic-gradient(#ef4444 0%, #f59e0b 45%, #10b981 75%, #10b981 100%); }
+    .score-circle::before { content: ''; position: absolute; width: 110px; height: 110px; border-radius: 50%; background: white; }
+    .score-value { position: relative; z-index: 1; font-size: 3rem; font-weight: 800; color: #1f2937; }
+    .score-verdict { font-size: 1.1rem; font-weight: 600; margin-top: 0.5rem; }
+    .score-recommendation { color: #6b7280; font-size: 0.9rem; margin-top: 0.5rem; }
+    
+    .breakdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1.5rem; }
+    .breakdown-item { background: #f9fafb; border-radius: 8px; padding: 1rem; }
+    .breakdown-label { font-size: 0.8rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+    .breakdown-bar { height: 8px; background: #e5e7eb; border-radius: 4px; margin-top: 0.5rem; overflow: hidden; }
+    .breakdown-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+    .breakdown-score { font-weight: 700; font-size: 1.25rem; margin-top: 0.5rem; }
+    
+    .btn { background: #4f46e5; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 1rem; }
+    .btn:hover { background: #4338ca; }
+    .btn-secondary { background: #6b7280; }
+    .btn-success { background: #10b981; }
+    .btn-danger { background: #ef4444; }
+    
+    .idea-list { max-height: 400px; overflow-y: auto; }
+    .idea-item { padding: 1rem; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: background 0.15s; }
+    .idea-item:hover { background: #f9fafb; }
+    .idea-item.active { background: #eff6ff; border-left: 3px solid #4f46e5; }
+    .idea-title { font-weight: 600; color: #1f2937; margin-bottom: 0.25rem; }
+    .idea-meta { display: flex; gap: 0.5rem; font-size: 0.75rem; color: #9ca3af; flex-wrap: wrap; }
+    .idea-badge { padding: 0.15rem 0.5rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; }
+    .badge-raw { background: #f3f4f6; color: #374151; }
+    .badge-validated { background: #dcfce7; color: #166534; }
+    .badge-building { background: #dbeafe; color: #1e40af; }
+    .badge-launched { background: #fef3c7; color: #92400e; }
+    .idea-score { font-weight: 700; font-size: 1.1rem; }
+    
+    .results-section { margin-top: 1.5rem; }
+    .results-section h3 { margin-top: 0; }
+    .detail-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #f3f4f6; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { color: #6b7280; }
+    .detail-value { font-weight: 600; }
+    
+    .empty-state { text-align: center; padding: 3rem; color: #9ca3af; }
+    .empty-state svg { width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.5; }
+    
+    .preset-btns { display: flex; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+    .preset-btn { background: #e5e7eb; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+    .preset-btn:hover { background: #d1d5db; }
+    
+    .validation-history { margin-top: 1rem; }
+    .history-item { background: #f9fafb; border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; }
+    .history-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+    .history-date { color: #9ca3af; font-size: 0.85rem; }
+    .history-verdict { font-weight: 600; }
+    
+    .sticky { position: sticky; top: 2rem; }
+  </style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <h1 style="margin:0;">✅ Idea Validator</h1>
+    <div>
+      <a href="/app-launch-planner/">Home</a>
+      <a href="/app-launch-planner/calculators.html">Calculators</a>
+      <a href="/app-launch-planner/legal.html">Legal/IP</a>
+      <a href="/app-launch-planner/prompts.html">Prompt Eng</a>
+      <a href="/app-launch-planner/notes.html">Notes</a>
+      <a href="/app-launch-planner/validator.html">Validator</a>
+      <a href="/app-launch-planner/resources.html">Resources</a>
+    </div>
+  </nav>
+
+  <main style="padding: 0 2rem 2rem;">
+    <h1 style="text-align:center; margin-bottom:0.5rem;">Idea Validator</h1>
+    <p style="text-align:center; color:#6b7280; margin-bottom:2rem;">Score, validate, and track your app ideas. 7-factor algorithm with live feedback.</p>
+
+    <div class="validator-layout">
+      <!-- Left: Input Form -->
+      <div>
+        <section class="card">
+          <h2>💡 Idea Details</h2>
+          
+          <div class="input-row">
+            <div class="input-group">
+              <label>App Title</label>
+              <input type="text" id="ideaTitle" placeholder="e.g., HabitStack for Developers">
+            </div>
+            <div class="input-group">
+              <label>Category</label>
+              <select id="ideaCategory">
+                <option value="">Select...</option>
+                <option value="fitness">Fitness/Health</option>
+                <option value="finance">Finance/Budget</option>
+                <option value="productivity">Productivity</option>
+                <option value="education">Education/Learning</option>
+                <option value="lifestyle">Lifestyle</option>
+                <option value="utility">Utility/Tools</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="input-row">
+            <div class="input-group">
+              <label>Platform</label>
+              <select id="ideaPlatform">
+                <option value="both">iOS + Android</option>
+                <option value="ios">iOS Only</option>
+                <option value="android">Android Only</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label>Monetization</label>
+              <select id="ideaMonetization">
+                <option value="subscription">Subscription</option>
+                <option value="freemium">Freemium</option>
+                <option value="paid">Paid Upfront</option>
+                <option value="ads">Ad-Supported</option>
+                <option value="marketplace">Marketplace/Transaction</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="input-row">
+            <div class="input-group">
+              <label>Monthly Price ($)</label>
+              <input type="number" id="ideaPrice" value="4.99" step="0.01" min="0">
+            </div>
+            <div class="input-group">
+              <label>Status</label>
+              <select id="ideaStatus">
+                <option value="raw">💭 Raw Idea</option>
+                <option value="validated">✅ Validated</option>
+                <option value="building">🔨 Building</option>
+                <option value="launched">🚀 Launched</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="input-group">
+            <label>Problem Statement</label>
+            <textarea id="ideaProblem" placeholder="What painful problem does this solve? Be specific. Who has this problem daily?"></textarea>
+          </div>
+          
+          <div class="input-group">
+            <label>Your Solution</label>
+            <textarea id="ideaSolution" placeholder="How does your app solve it better than existing options? What's the 'aha' moment?"></textarea>
+          </div>
+          
+          <div class="input-group">
+            <label>Target Audience (be specific)</label>
+            <textarea id="ideaAudience" placeholder="Not 'everyone'. Example: 'iOS developers who struggle with context switching between Xcode, terminal, and browser'"></textarea>
+          </div>
+          
+          <div class="preset-btns">
+            <button class="preset-btn" onclick="loadPreset('fitness_niche')">Fitness Niche</button>
+            <button class="preset-btn" onclick="loadPreset('dev_tool')">Dev Tool</button>
+            <button class="preset-btn" onclick="loadPreset('finance_niche')">Finance Niche</button>
+            <button class="preset-btn" onclick="loadPreset('ai_wrapper')">AI Wrapper ⚠️</button>
+          </div>
+          
+          <button class="btn" onclick="validateIdea()">🔍 Validate This Idea</button>
+          <button class="btn btn-success" onclick="saveIdea()" style="margin-top:0.5rem;">💾 Save Idea</button>
+        </section>
+
+        <!-- Validation History -->
+        <section class="card validation-history">
+          <h2>📜 Validation History</h2>
+          <div id="validationHistory">
+            <p style="color:#9ca3af; text-align:center; padding:2rem;">No validations yet. Run your first validation above.</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right: Score Display -->
+      <div class="sticky">
+        <div class="card">
+          <h2>📊 Validation Score</h2>
+          
+          <div class="score-display" id="scoreDisplay">
+            <div class="score-circle" id="scoreCircle">
+              <span class="score-value" id="scoreValue">—</span>
+            </div>
+            <div class="score-verdict" id="scoreVerdict">Enter idea details and click Validate</div>
+            <div class="score-recommendation" id="scoreRecommendation"></div>
+          </div>
+
+          <div class="breakdown-grid" id="breakdownGrid">
+            <div class="breakdown-item">
+              <div class="breakdown-label">Market Size</div>
+              <div class="breakdown-bar"><div class="breakdown-fill" id="bar-market" style="width:0%; background:#4f46e5"></div></div>
+              <div class="breakdown-score" id="score-market">—</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-label">Pain Level</div>
+              <div class="breakdown-bar"><div class="breakdown-fill" id="bar-pain" style="width:0%; background:#10b981"></div></div>
+              <div class="breakdown-score" id="score-pain">—</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-label">Competition</div>
+              <div class="breakdown-bar"><div class="breakdown-fill" id="bar-comp" style="width:0%; background:#f59e0b"></div></div>
+              <div class="breakdown-score" id="score-comp">—</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-label">Monetization</div>
+              <div class="breakdown-bar"><div class="breakdown-fill" id="bar-monet" style="width:0%; background:#8b5cf6"></div></div>
+              <div class="breakdown-score" id="score-monet">—</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-label">Technical</div>
+              <div class="breakdown-bar"><div class="breakdown-fill" id="bar-tech" style="width:0%; background:#ec4899"></div></div>
+              <div class="breakdown-score" id="score-tech">—</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-label">Legal Risk</div>
+              <div class="breakdown-bar"><div class="breakdown-fill" id="bar-legal" style="width:0%; background:#ef4444"></div></div>
+              <div class="breakdown-score" id="score-legal">—</div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-label">Differentiation</div>
+              <div class="breakdown-bar"><div class="breakdown-fill" id="bar-diff" style="width:0%; background:#06b6d4"></div></div>
+              <div class="breakdown-score" id="score-diff">—</div>
+            </div>
+          </div>
+
+          <div class="results-section" id="resultsSection" style="display:none;">
+            <h3>📋 Detailed Analysis</h3>
+            <div class="detail-row"><span class="detail-label">Verdict</span><span class="detail-value" id="detailVerdict">—</span></div>
+            <div class="detail-row"><span class="detail-label">Recommendation</span><span class="detail-value" id="detailRec">—</span></div>
+            <div class="detail-row"><span class="detail-label">Market Size Score</span><span class="detail-value" id="detailMarket">—</span></div>
+            <div class="detail-row"><span class="detail-label">Pain Level Score</span><span class="detail-value" id="detailPain">—</span></div>
+            <div class="detail-row"><span class="detail-label">Competition Score</span><span class="detail-value" id="detailComp">—</span></div>
+            <div class="detail-row"><span class="detail-label">Monetization Score</span><span class="detail-value" id="detailMonet">—</span></div>
+            <div class="detail-row"><span class="detail-label">Technical Feasibility</span><span class="detail-value" id="detailTech">—</span></div>
+            <div class="detail-row"><span class="detail-label">Legal Risk Score</span><span class="detail-value" id="detailLegal">—</span></div>
+            <div class="detail-row"><span class="detail-label">Differentiation</span><span class="detail-value" id="detailDiff">—</span></div>
+          </div>
+        </div>
+
+        <!-- Saved Ideas List -->
+        <div class="card">
+          <h2>💾 Saved Ideas</h2>
+          <div class="idea-list" id="ideaList">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+              <p>No saved ideas yet</p>
+              <p style="font-size:0.85rem;">Validate and save your first idea</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align:center; margin-top:2rem; color:#6b7280;">
+      <strong>Live:</strong> <a href="https://djphamdev.github.io/app-launch-planner/">djphamdev.github.io/app-launch-planner</a>
+    </p>
+  </main>
+
+  <script>
+    let currentValidation = null;
+    let savedIdeas = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSavedIdeas();
+      renderIdeaList();
+    });
+
+    function loadPreset(type) {
+      const presets = {
+        fitness_niche: {
+          title: 'StrengthTracker for Teens',
+          category: 'fitness',
+          platform: 'both',
+          monetization: 'subscription',
+          price: '7.99',
+          status: 'raw',
+          problem: 'Teen athletes (13-18) have no age-appropriate strength tracking. Adult apps are too complex, intimidating, and use 1RM calculations unsafe for growing bodies. Coaches use paper notebooks. Parents worry about injury.',
+          solution: 'Simple workout logger with age-appropriate progression, video form guides, coach dashboard, parent safety view. No 1RM - uses RPE and volume landmarks. Built-in deload weeks. Social features for team accountability.',
+          audience: 'Teen athletes 13-18 in school sports (football, basketball, wrestling, track). Secondary: high school coaches, parents.'
+        },
+        dev_tool: {
+          title: 'ContextKeeper for Xcode',
+          category: 'productivity',
+          platform: 'ios',
+          monetization: 'subscription',
+          price: '4.99',
+          status: 'raw',
+          problem: 'iOS developers lose 30+ min/day context switching between Xcode, terminal, browser docs, simulator, and GitHub. No unified view of "what was I doing?" across tools. Mental stack overflow causes bugs.',
+          solution: 'Menu bar app that auto-tracks context: current file, branch, open PR, simulator state, build errors. One-click restore to any previous context. Keyboard shortcuts for instant switching. Local-only, privacy-first.',
+          audience: 'Professional iOS/macOS developers (Swift/SwiftUI). Teams of 2-20. High willingness to pay for flow state.'
+        },
+        finance_niche: {
+          title: 'SideHustle Tax Tracker',
+          category: 'finance',
+          platform: 'both',
+          monetization: 'subscription',
+          price: '5.99',
+          status: 'raw',
+          problem: '1099 workers (Uber, Etsy, freelance, Airbnb) mix personal/business expenses. Quarterly estimated taxes are a nightmare. Existing tools (QuickBooks) are overkill and expensive. IRS penalties for underpayment.',
+          solution: 'Auto-categorize bank transactions with rules. Calculate quarterly estimated tax in real-time. One-tap export for Schedule C. Mileage tracker. Receipt scanner. Built for side hustlers, not accountants.',
+          audience: 'Side hustlers earning $5K-$100K/yr from gig/freelance. Not full-time business owners. 57M+ US gig workers.'
+        },
+        ai_wrapper: {
+          title: 'AI Chat for [Niche]',
+          category: 'productivity',
+          platform: 'both',
+          monetization: 'subscription',
+          price: '9.99',
+          status: 'raw',
+          problem: 'People want ChatGPT but specialized for [niche]. Generic answers miss context.',
+          solution: 'Wrapper around GPT-4 with niche system prompt. Pre-built prompts. Chat history. Export.',
+          audience: 'Professionals in [niche] who use ChatGPT daily.'
+        }
+      };
+      const p = presets[type];
+      if (p) {
+        Object.keys(p).forEach(k => {
+          const el = document.getElementById('idea' + k.charAt(0).toUpperCase() + k.slice(1));
+          if (el) el.value = p[k];
+        });
+      }
+    }
+
+    function validateIdea() {
+      const idea = {
+        title: document.getElementById('ideaTitle').value,
+        category: document.getElementById('ideaCategory').value,
+        platform: document.getElementById('ideaPlatform').value,
+        monetization: document.getElementById('ideaMonetization').value,
+        price: parseFloat(document.getElementById('ideaPrice').value) || 0,
+        problem: document.getElementById('ideaProblem').value,
+        solution: document.getElementById('ideaSolution').value,
+        targetAudience: document.getElementById('ideaAudience').value
+      };
+
+      if (!idea.title || !idea.problem || !idea.solution || !idea.targetAudience) {
+        alert('Please fill in all required fields (title, problem, solution, audience)');
+        return;
+      }
+
+      const result = AppLaunch.validator.validate(idea);
+      currentValidation = { idea, result, timestamp: new Date().toISOString() };
+      displayResult(result);
+      saveValidation(currentValidation);
+      renderValidationHistory();
+    }
+
+    function displayResult(result) {
+      // Score circle
+      const score = result.total;
+      const circle = document.getElementById('scoreCircle');
+      const value = document.getElementById('scoreValue');
+      const verdict = document.getElementById('scoreVerdict');
+      const rec = document.getElementById('scoreRecommendation');
+
+      // Color based on score
+      let deg = (score / 100) * 360;
+      if (score >= 75) circle.style.background = `conic-gradient(#10b981 ${deg}deg, #e5e7eb ${deg}deg)`;
+      else if (score >= 60) circle.style.background = `conic-gradient(#10b981 ${deg}deg, #f59e0b ${deg}deg, #e5e7eb ${deg}deg)`;
+      else if (score >= 45) circle.style.background = `conic-gradient(#f59e0b ${deg}deg, #e5e7eb ${deg}deg)`;
+      else circle.style.background = `conic-gradient(#ef4444 ${deg}deg, #e5e7eb ${deg}deg)`;
+
+      value.textContent = score;
+      verdict.textContent = result.verdict;
+      rec.textContent = result.recommendation;
+
+      // Breakdown bars
+      const scores = result.scores;
+      const bars = {
+        market: scores.marketSize,
+        pain: scores.painLevel,
+        comp: scores.competition,
+        monet: scores.monetization,
+        tech: scores.technicalFeasibility,
+        legal: scores.legalRisk,
+        diff: scores.differentiation
+      };
+
+      Object.entries(bars).forEach(([key, val]) => {
+        document.getElementById('bar-' + key).style.width = val + '%';
+        document.getElementById('score-' + key).textContent = val;
+        // Color the score
+        const el = document.getElementById('score-' + key);
+        if (val >= 75) el.style.color = '#10b981';
+        else if (val >= 60) el.style.color = '#f59e0b';
+        else if (val >= 45) el.style.color = '#ef4444';
+        else el.style.color = '#ef4444';
+      });
+
+      // Details
+      document.getElementById('detailVerdict').textContent = result.verdict;
+      document.getElementById('detailRec').textContent = result.recommendation;
+      document.getElementById('detailMarket').textContent = scores.marketSize;
+      document.getElementById('detailPain').textContent = scores.painLevel;
+      document.getElementById('detailComp').textContent = scores.competition;
+      document.getElementById('detailMonet').textContent = scores.monetization;
+      document.getElementById('detailTech').textContent = scores.technicalFeasibility;
+      document.getElementById('detailLegal').textContent = scores.legalRisk;
+      document.getElementById('detailDiff').textContent = scores.differentiation;
+      document.getElementById('resultsSection').style.display = 'block';
+    }
+
+    function saveIdea() {
+      if (!currentValidation) {
+        alert('Validate an idea first');
+        return;
+      }
+      
+      const idea = new AppLaunch.models.Idea({
+        ...currentValidation.idea,
+        score: currentValidation.result.total,
+        validationData: currentValidation.result,
+        phase: currentValidation.result.total >= 60 ? 3 : 1
+      });
+      
+      savedIdeas.unshift(idea);
+      localStorage.setItem('applaunch_ideas', JSON.stringify(savedIdeas));
+      renderIdeaList();
+      alert('Idea saved! Score: ' + idea.score);
+    }
+
+    function loadSavedIdeas() {
+      savedIdeas = JSON.parse(localStorage.getItem('applaunch_ideas') || '[]');
+    }
+
+    function renderIdeaList() {
+      const container = document.getElementById('ideaList');
+      if (!savedIdeas.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4.5v15m7.5-7.5h-15"></path></svg>
+            <p>No saved ideas yet</p>
+            <p style="font-size:0.85rem;">Validate and save your first idea</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = savedIdeas.map((idea, i) => `
+        <div class="idea-item ${i === 0 ? 'active' : ''}" onclick="loadIdea(${i})">
+          <div class="idea-title">${escapeHtml(idea.title)} <span class="idea-badge badge-${idea.status}">${idea.status}</span></div>
+          <div class="idea-meta">
+            <span>${idea.category}</span>
+            <span>${idea.platform}</span>
+            <span>${idea.monetization}</span>
+            <span>$${idea.price}/mo</span>
+          </div>
+          <div class="idea-score" style="color:${getScoreColor(idea.score)}">${idea.score}/100</div>
+        </div>
+      `).join('');
+    }
+
+    function loadIdea(index) {
+      const idea = savedIdeas[index];
+      document.getElementById('ideaTitle').value = idea.title;
+      document.getElementById('ideaCategory').value = idea.category;
+      document.getElementById('ideaPlatform').value = idea.platform;
+      document.getElementById('ideaMonetization').value = idea.monetization;
+      document.getElementById('ideaPrice').value = idea.price;
+      document.getElementById('ideaStatus').value = idea.status;
+      document.getElementById('ideaProblem').value = idea.problem;
+      document.getElementById('ideaSolution').value = idea.solution;
+      document.getElementById('ideaAudience').value = idea.targetAudience;
+      
+      if (idea.validationData) {
+        displayResult(idea.validationData);
+        currentValidation = { idea, result: idea.validationData };
+      }
+      
+      document.querySelectorAll('.idea-item').forEach((el, i) => el.classList.toggle('active', i === index));
+    }
+
+    function saveValidation(validation) {
+      const history = JSON.parse(localStorage.getItem('applaunch_validations') || '[]');
+      history.unshift(validation);
+      if (history.length > 50) history.pop();
+      localStorage.setItem('applaunch_validations', JSON.stringify(history));
+    }
+
+    function renderValidationHistory() {
+      const history = JSON.parse(localStorage.getItem('applaunch_validations') || '[]');
+      const container = document.getElementById('validationHistory');
+      
+      if (!history.length) {
+        container.innerHTML = '<p style="color:#9ca3af; text-align:center; padding:2rem;">No validations yet.</p>';
+        return;
+      }
+      
+      container.innerHTML = history.slice(0, 10).map(v => `
+        <div class="history-item">
+          <div class="history-header">
+            <span class="history-date">${new Date(v.timestamp).toLocaleString()}</span>
+            <span class="history-verdict">${v.result.verdict}</span>
+          </div>
+          <div style="font-weight:600;">${escapeHtml(v.idea.title)}</div>
+          <div style="font-size:0.85rem; color:#6b7280;">Score: ${v.result.total}/100 • ${v.result.recommendation}</div>
+        </div>
+      `).join('');
+    }
+
+    function getScoreColor(score) {
+      if (score >= 75) return '#10b981';
+      if (score >= 60) return '#f59e0b';
+      if (score >= 45) return '#ef4444';
+      return '#ef4444';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

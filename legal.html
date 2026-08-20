@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal/IP Guide - App Launch Planner</title>
+  <script src="/app-launch-planner/app-core.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .legal-section { background: white; border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+    .legal-section h2 { margin-top: 0; color: #1e40af; border-bottom: 2px solid #e5e7eb; padding-bottom: 0.5rem; }
+    .legal-section h3 { color: #374151; margin-top: 1.5rem; }
+    .legal-section h4 { color: #4b5563; margin-top: 1rem; }
+    .legal-section pre { background: #1f2937; color: #e5e7eb; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; line-height: 1.5; }
+    .legal-section code { background: #f1f5f9; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: flex-start; gap: 0.75rem; }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist input[type="checkbox"] { margin-top: 0.25rem; width: 1.1rem; height: 1.1rem; accent-color: #4f46e5; flex-shrink: 0; }
+    .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; margin-right: 0.5rem; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-yellow { background: #fef9c3; color: #854d0e; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    th { background: #f9fafb; font-weight: 600; }
+    .alert-box { padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+    .alert-warning { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
+    .alert-danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; margin: -2rem -2rem 2rem; border-radius: 12px 12px 0 0; }
+    .nav-bar a { color: white; text-decoration: none; margin-left: 1rem; opacity: 0.9; }
+    .nav-bar a:hover { opacity: 1; text-decoration: underline; }
+    .toc { background: #f9fafb; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+    .toc h3 { margin-top: 0; }
+    .toc ul { list-style: none; padding: 0; columns: 2; column-gap: 2rem; }
+    .toc li { margin: 0.5rem 0; }
+    .toc a { color: #4f46e5; text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; margin: 1rem 0; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #7c3aed); border-radius: 4px; transition: width 0.3s; }
+    @media (max-width: 768px) { .toc ul { columns: 1; } }
+  </style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <h1 style="margin:0;">⚖️ Legal/IP Guide</h1>
+    <div>
+      <a href="/app-launch-planner/">Home</a>
+      <a href="/app-launch-planner/calculators.html">Calculators</a>
+      <a href="/app-launch-planner/legal.html">Legal/IP</a>
+      <a href="/app-launch-planner/prompts.html">Prompt Eng</a>
+      <a href="/app-launch-planner/notes.html">Notes</a>
+      <a href="/app-launch-planner/validator.html">Validator</a>
+      <a href="/app-launch-planner/resources.html">Resources</a>
+    </div>
+  </nav>
+
+  <main style="padding: 0 2rem 2rem;">
+    <h1 style="text-align:center; margin-bottom:0.5rem;">Legal & IP Protection</h1>
+    <p style="text-align:center; color:#6b7280; margin-bottom:2rem;">Protect your app, avoid lawsuits, stay compliant. Not legal advice — consult an attorney.</p>
+
+    <div class="toc">
+      <h3>📋 Table of Contents</h3>
+      <ul>
+        <li><a href="#trademark">Trademark Protection</a></li>
+        <li><a href="#patent">Patent Strategy</a></li>
+        <li><a href="#contracts">Essential Contracts</a></li>
+        <li><a href="#app-store">App Store Compliance</a></li>
+        <li><a href="#privacy">Privacy & Data</a></li>
+        <li><a href="#opensource">Open Source Licenses</a></li>
+        <li><a href="#competitor">Competitor IP Risks</a></li>
+        <li><a href="#checklist">Launch Legal Checklist</a></li>
+      </ul>
+    </div>
+
+    <!-- Trademark -->
+    <section class="legal-section" id="trademark">
+      <h2>🏷️ Trademark Protection</h2>
+      <p>Your app name and logo are your brand assets. Protect them early.</p>
+      
+      <h3>Before You Launch</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="tm1" onchange="saveCheck('tm1')"> <label for="tm1">Search <a href="https://tmsearch.uspto.gov" target="_blank">USPTO TESS</a> for exact matches</label></li>
+        <li><input type="checkbox" id="tm2" onchange="saveCheck('tm2')"> <label for="tm2">Search App Store / Play Store for similar names</label></li>
+        <li><input type="checkbox" id="tm3" onchange="saveCheck('tm3')"> <label for="tm3">Check domain availability (.com, .app, .io)</label></li>
+        <li><input type="checkbox" id="tm4" onchange="saveCheck('tm4')"> <label for="tm4">Reserve social handles (@yourname on Twitter, IG, TikTok)</label></li>
+        <li><input type="checkbox" id="tm5" onchange="saveCheck('tm5')"> <label for="tm5">Google the name + "app" + "lawsuit"</label></li>
+      </ul>
+
+      <h3>Filing Strategy</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Filing Type</th><th>Cost (per class)</th><th>Timeline</th><th>Best For</th></tr></thead>
+          <tbody>
+            <tr><td>TEAS Plus</td><td>$250</td><td>12-18 months</td><td>Standard, US-only</td></tr>
+            <tr><td>TEAS Standard</td><td>$350</td><td>12-18 months</td><td>Custom descriptions</td></tr>
+            <tr><td>Intent-to-Use (ITU)</td><td>$250 + $100 later</td><td>File before launch</td><td>Pre-launch protection</td></tr>
+            <tr><td>Madrid Protocol</td><td>$100+ per country</td><td>18+ months</td><td>International</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Recommended Classes for Apps</h3>
+      <ul>
+        <li><strong>Class 009:</strong> Downloadable software, mobile apps</li>
+        <li><strong>Class 042:</strong> SaaS, cloud services, API</li>
+        <li><strong>Class 035:</strong> Marketing, app store optimization services</li>
+        <li><strong>Class 041:</strong> Educational content, courses (if applicable)</li>
+      </ul>
+
+      <h3>Strong vs Weak Marks</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Strength</th><th>Examples</th><th>Protectable?</th><th>Strategy</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-green">Fanciful</span></td><td>Kodak, Xerox, Spotify</td><td>✅ Strongest</td><td>Invent a word</td></tr>
+            <tr><td><span class="badge badge-green">Arbitrary</span></td><td>Apple (tech), Amazon (shopping)</td><td>✅ Strong</td><td>Real word, unrelated meaning</td></tr>
+            <tr><td><span class="badge badge-yellow">Suggestive</span></td><td>Netflix, Coppertone, Airbnb</td><td>✅ Good</td><td>Hints at benefit</td></tr>
+            <tr><td><span class="badge badge-yellow">Descriptive</span></td><td>"Fast Calculator", "Easy Budget"</td><td>⚠️ Weak (needs secondary meaning)</td><td>Avoid if possible</td></tr>
+            <tr><td><span class="badge badge-red">Generic</span></td><td>"Calculator App", "Weather"</td><td>❌ Never</td><td>Cannot trademark</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="alert-box alert-info">
+        <strong>💡 Pro Tip:</strong> File ITU (Intent-to-Use) before public launch. Gives you priority date while you build. Cost: ~$350/class including statement of use later.
+      </div>
+    </section>
+
+    <!-- Patent -->
+    <section class="legal-section" id="patent">
+      <h2>📜 Patent Considerations</h2>
+      <p>Most apps don't need patents. Know when they matter.</p>
+
+      <h3>What's Patentable</h3>
+      <ul>
+        <li><strong>Utility patents:</strong> Novel, non-obvious processes (unique algorithms, ML methods, hardware integration)</li>
+        <li><strong>Design patents:</strong> Unique ornamental UI/UX designs (15 years protection)</li>
+        <li><strong>NOT patentable:</strong> Abstract ideas, basic CRUD apps, standard UI patterns, business methods alone</li>
+      </ul>
+
+      <h3>Cost/Benefit Analysis</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Cost (DIY)</th><th>Cost (Attorney)</th><th>Duration</th><th>Best For</th></tr></thead>
+          <tbody>
+            <tr><td>Provisional</td><td>$75-300</td><td>$1,500-3,000</td><td>1 year ("Patent Pending")</td><td>Buying time, fundraising</td></tr>
+            <tr><td>Non-provisional (Utility)</td><td>$5,000-10,000</td><td>$10,000-20,000+</td><td>20 years from filing</td><td>Core novel tech</td></tr>
+            <tr><td>Design Patent</td><td>$500-1,000</td><td>$2,000-4,000</td><td>15 years from grant</td><td>Unique UI design</td></tr>
+            <tr><td>Maintenance Fees</td><td colspan="4">$400 (3.5yr), $900 (7.5yr), $1,850 (11.5yr), $3,700 (15.5yr)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>When to File</h3>
+      <div class="alert-box alert-success">
+        <strong>✅ File if:</strong> Truly novel algorithm/process, unique hardware integration, defensible competitive moat, budget > $15K
+      </div>
+      <div class="alert-box alert-danger">
+        <strong>❌ Skip if:</strong> Standard SaaS features, UI patterns already in use, budget < $10K, "AI wrapper" apps
+      </div>
+
+      <h3>Alternative: Trade Secrets</h3>
+      <ul>
+        <li>No registration cost, lasts indefinitely</li>
+        <li>Requires: NDAs, access controls, documentation, employee agreements</li>
+        <li>Lost if: reverse-engineered, independently discovered, publicly disclosed</li>
+        <li>Best for: proprietary algorithms, user data models, business processes</li>
+      </ul>
+    </section>
+
+    <!-- Contracts -->
+    <section class="legal-section" id="contracts">
+      <h2>📄 Essential Contracts</h2>
+
+      <h3>1. Co-founder Agreement (Before writing code)</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="cf1" onchange="saveCheck('cf1')"> <label for="cf1">Equity split with vesting (4 years, 1-year cliff standard)</label></li>
+        <li><input type="checkbox" id="cf2" onchange="saveCheck('cf2')"> <label for="cf2">IP assignment — all work belongs to company</label></li>
+        <li><input type="checkbox" id="cf3" onchange="saveCheck('cf3')"> <label for="cf3">Decision framework (unanimous? majority? CEO decides?)</label></li>
+        <li><input type="checkbox" id="cf4" onchange="saveCheck('cf4')"> <label for="cf4">Exit provisions (acquisition, IPO, buyout)</label></li>
+        <li><input type="checkbox" id="cf5" onchange="saveCheck('cf5')"> <label for="cf5">Non-compete during and after involvement</label></li>
+      </ul>
+
+      <h3>2. Contractor / Freelancer Agreements</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="ct1" onchange="saveCheck('ct1')"> <label for="ct1">Work-for-hire clause (you own all IP)</label></li>
+        <li><input type="checkbox" id="ct2" onchange="saveCheck('ct2')"> <label for="ct2">Confidentiality / NDA</label></li>
+        <li><input type="checkbox" id="ct3" onchange="saveCheck('ct3')"> <label for="ct3">Clear deliverables + acceptance criteria</label></li>
+        <li><input type="checkbox" id="ct4" onchange="saveCheck('ct4')"> <label for="ct4">Milestone-based payments (not hourly)</label></li>
+        <li><input type="checkbox" id="ct5" onchange="saveCheck('ct5')"> <label for="ct5">Source code delivery + documentation</label></li>
+      </ul>
+
+      <h3>3. User-Facing Agreements</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Document</th><th>Required?</th><th>Key Clauses</th><th>Tools</th></tr></thead>
+          <tbody>
+            <tr><td>Terms of Service</td><td>✅ Yes</td><td>User conduct, liability limits, dispute resolution, termination</td><td>Termly, Termageddon, Iubenda</td></tr>
+            <tr><td>Privacy Policy</td><td>✅ Yes (GDPR/CCPA)</td><td>Data collected, purpose, sharing, user rights, retention</td><td>Termly, FreePrivacyPolicy</td></tr>
+            <tr><td>EULA</td><td>Paid iOS apps</td><td>License grant, restrictions, warranty disclaimer</td><td>Apple provides template</td></tr>
+            <tr><td>Cookie Policy</td><td>If web + EU users</td><td>Cookie types, consent, opt-out</td><td>Cookiebot, OneTrust</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>4. App Store Specific</h3>
+      <ul>
+        <li><strong>Apple:</strong> Guideline 5.1.1 (privacy policy URL), 3.1.1 (in-app purchase), 4.2 (minimum functionality), 5.2 (intellectual property)</li>
+        <li><strong>Google:</strong> Developer Distribution Agreement, User Data Policy, Target API level requirements</li>
+        <li><strong>Both:</strong> Age rating (IARC), content guidelines, accessibility (WCAG 2.1 AA)</li>
+      </ul>
+    </section>
+
+    <!-- App Store Compliance -->
+    <section class="legal-section" id="app-store">
+      <h2>🏪 App Store Compliance</h2>
+
+      <h3>Apple App Store (Strictest)</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="as1" onchange="saveCheck('as1')"> <label for="as1">Privacy policy URL in App Store Connect</label></li>
+        <li><input type="checkbox" id="as2" onchange="saveCheck('as2')"> <label for="as2">No external payment links (Guideline 3.1.1)</label></li>
+        <li><input type="checkbox" id="as3" onchange="saveCheck('as3')"> <label for="as3">App does something useful (Guideline 4.2 - no "demo" apps)</label></li>
+        <li><input type="checkbox" id="as4" onchange="saveCheck('as4')"> <label for="as4">No hidden features, undocumented APIs</label></li>
+        <li><input type="checkbox" id="as5" onchange="saveCheck('as5')"> <label for="as5">Proper age rating (IARC questionnaire)</label></li>
+        <li><input type="checkbox" id="as6" onchange="saveCheck('as6')"> <label for="as6">Accessibility: VoiceOver, Dynamic Type, contrast</label></li>
+        <li><input type="checkbox" id="as7" onchange="saveCheck('as7')"> <label for="as7">No crypto mining, background location without need</label></li>
+      </ul>
+
+      <h3>Google Play Store</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="gp1" onchange="saveCheck('gp1')"> <label for="gp1">Data Safety form completed (Play Console)</label></li>
+        <li><input type="checkbox" id="gp2" onchange="saveCheck('gp2')"> <label for="gp2">Target API level 34+ (Android 14)</label></li>
+        <li><input type="checkbox" id="gp3" onchange="saveCheck('gp3')"> <label for="gp3">64-bit native libraries (if applicable)</label></li>
+        <li><input type="checkbox" id="gp4" onchange="saveCheck('gp4')"> <label for="gp4">No misleading metadata, keyword stuffing</label></li>
+        <li><input type="checkbox" id="gp5" onchange="saveCheck('gp5')"> <label for="gp5">Proper content rating questionnaire</label></li>
+      </ul>
+
+      <div class="alert-box alert-warning">
+        <strong>⚠️ Common Rejection Reasons:</strong> "Minimum functionality" (looks like web view), hidden payment flows, missing privacy policy, crash on launch, misleading screenshots.
+      </div>
+    </section>
+
+    <!-- Privacy & Data -->
+    <section class="legal-section" id="privacy">
+      <h2>🔒 Privacy & Data Compliance</h2>
+
+      <h3>GDPR (EU Users) - Required if any EU user</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="gdpr1" onchange="saveCheck('gdpr1')"> <label for="gdpr1">Lawful basis for each data type (consent, contract, legitimate interest)</label></li>
+        <li><input type="checkbox" id="gdpr2" onchange="saveCheck('gdpr2')"> <label for="gdpr2">Data minimization — only collect what you need</label></li>
+        <li><input type="checkbox" id="gdpr3" onchange="saveCheck('gdpr3')"> <label for="gdpr3">Right to access, rectify, delete, portability implemented</label></li>
+        <li><input type="checkbox" id="gdpr4" onchange="saveCheck('gdpr4')"> <label for="gdpr4">Data Processing Agreement (DPA) with subprocessors (Firebase, RevenueCat, etc.)</label></li>
+        <li><input type="checkbox" id="gdpr5" onchange="saveCheck('gdpr5')"> <label for="gdpr5">Breach notification plan (72 hours)</label></li>
+        <li><input type="checkbox" id="gdpr6" onchange="saveCheck('gdpr6')"> <label for="gdpr6">DPO (Data Protection Officer) if large scale processing</label></li>
+      </ul>
+
+      <h3>CCPA/CPRA (California Users)</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="ccpa1" onchange="saveCheck('ccpa1')"> <label for="ccpa1">"Do Not Sell My Personal Info" link (if selling data)</label></li>
+        <li><input type="checkbox" id="ccpa2" onchange="saveCheck('ccpa2')"> <label for="ccpa2">Right to know, delete, opt-out implemented</label></li>
+        <li><input type="checkbox" id="ccpa3" onchange="saveCheck('ccpa3')"> <label for="ccpa3">No discrimination for exercising rights</label></li>
+      </ul>
+
+      <h3>COPPA (Users Under 13)</h3>
+      <div class="alert-box alert-danger">
+        <strong>If your app might attract kids:</strong> Verifiable parental consent required, no behavioral ads, limited data collection, COPPA-safe third parties only.
+      </div>
+
+      <h3>Recommended Stack for Compliance</h3>
+      <pre><code>Analytics:     PostHog (self-hosted) / Plausible (no cookies)
+Auth:          Firebase Auth / Supabase (built-in GDPR tools)
+Payments:      RevenueCat (handles receipt validation, user data)
+Crashlytics:   Firebase Crashlytics (anonymize IP)
+Logging:       Sentry (configure PII scrubbing)</code></pre>
+    </section>
+
+    <!-- Open Source -->
+    <section class="legal-section" id="opensource">
+      <h2>📦 Open Source Licenses</h2>
+      <p>Every dependency carries license obligations. Audit before shipping.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>License</th><th>Commercial Use</th><th>Modify</th><th>Distribute</th><th>Patent Grant</th><th>Copyleft?</th><th>Risk</th></tr></thead>
+          <tbody>
+            <tr><td>MIT</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>No</td><td>Low</td></tr>
+            <tr><td>Apache 2.0</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>No</td><td>Low</td></tr>
+            <tr><td>BSD-3</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>No</td><td>Low</td></tr>
+            <tr><td>LGPL v2.1</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>Weak (lib only)</td><td>Medium</td></tr>
+            <tr><td>GPL v3</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>Yes (viral)</td><td>High</td></tr>
+            <tr><td>AGPL v3</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>Yes (network)</td><td>Very High</td></tr>
+            <tr><td>MPL 2.0</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>Weak (file-level)</td><td>Medium</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Safe Dependency Practices</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="os1" onchange="saveCheck('os1')"> <label for="os1">Run <code>npm audit</code> / <code>cargo audit</code> / <code>pip-audit</code> before release</label></li>
+        <li><input type="checkbox" id="os2" onchange="saveCheck('os2')"> <label for="os2">Generate SBOM (Software Bill of Materials) - <code>cyclonedx</code> or <code>syft</code></label></li>
+        <li><input type="checkbox" id="os3" onchange="saveCheck('os3')"> <label for="os3">Pin exact versions in lockfiles (no ^ or ~)</label></li>
+        <li><input type="checkbox" id="os4" onchange="saveCheck('os4')"> <label for="os4">Check for GPL/AGPL in transitive dependencies</label></li>
+        <li><input type="checkbox" id="os5" onchange="saveCheck('os5')"> <label for="os5">Keep license texts in app (About → Legal)</label></li>
+      </ul>
+
+      <h3>Tools</h3>
+      <pre><code># JavaScript/TypeScript
+npx license-checker --summary
+npx @cyclonedx/bom
+
+# iOS (Swift Package Manager)
+swift package show-dependencies --format json
+
+# Android (Gradle)
+./gradlew dependencyLicenseReport
+
+# Universal
+syft packages dir:. -o cyclonedx-json=sbom.json</code></pre>
+    </section>
+
+    <!-- Competitor IP -->
+    <section class="legal-section" id="competitor">
+      <h2>🛡️ Competitor IP Risks</h2>
+      <p>Don't get sued by the big players. Know the landscape.</p>
+
+      <h3>Before Building - Freedom to Operate (FTO)</h3>
+      <ol>
+        <li>Search <a href="https://patents.google.com" target="_blank">Google Patents</a> for your core features</li>
+        <li>Search USPTO for assignee = major competitors (Apple, Google, Meta, Microsoft, Adobe, etc.)</li>
+        <li>Check if your "novel" feature is actually patented by someone else</li>
+        <li>Document your independent development (dated notes, commits)</li>
+      </ol>
+
+      <h3>Common Patent Minefields</h3>
+      <ul>
+        <li><strong>In-app purchase flows:</strong> Apple, Google have extensive portfolios</li>
+        <li><strong>Social features:</strong> Meta (friend graphs, feeds, stories)</li>
+        <li><strong>Mobile sync:</strong> Dropbox, Google, Microsoft</li>
+        <li><strong>AR/ML on device:</strong> Apple (CoreML, ARKit), Google (ML Kit)</li>
+        <li><strong>Push notifications:</strong> Multiple holders</li>
+      </ul>
+
+      <h3>Defensive Strategies</h3>
+      <ul>
+        <li><strong>Design around:</strong> Build differently, not just "similar"</li>
+        <li><strong>Prior art:</strong> Publish your approach (blog, GitHub) to block others' patents</li>
+        <li><strong>Defensive publication:</strong> Use <a href="https://defensivepublications.org" target="_blank">Defensive Publications</a> or <a href="https://www.ip.com" target="_blank">IP.com</a></li>
+        <li><strong>Join LOT Network / OIN:</strong> Patent non-aggression pacts (free for startups)</li>
+        <li><strong>Insurance:</strong> IP infringement insurance (~$2-5K/year for $1M coverage)</li>
+      </ul>
+
+      <div class="alert-box alert-info">
+        <strong>💡 Reality Check:</strong> Most indie apps fly under the radar. Big companies sue when you're a threat ($10M+ ARR) or doing something identical to their core IP. Focus on differentiation, not paranoia.
+      </div>
+    </section>
+
+    <!-- Launch Checklist -->
+    <section class="legal-section" id="checklist">
+      <h2>✅ Pre-Launch Legal Checklist</h2>
+      
+      <div class="progress-bar"><div class="progress-fill" id="legalProgress" style="width:0%"></div></div>
+      <p id="legalProgressText">0 of 20 completed</p>
+
+      <h3>Brand & IP</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="lc1" onchange="updateLegalProgress()"> <label for="lc1">Trademark search completed (USPTO + App Stores)</label></li>
+        <li><input type="checkbox" id="lc2" onchange="updateLegalProgress()"> <label for="lc2">Trademark filed (ITU or actual use)</label></li>
+        <li><input type="checkbox" id="lc3" onchange="updateLegalProgress()"> <label for="lc3">Domain + social handles secured</label></li>
+        <li><input type="checkbox" id="lc4" onchange="updateLegalProgress()"> <label for="lc4">Logo/brand assets created (vector source files kept)</label></li>
+      </ul>
+
+      <h3>Corporate</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="lc5" onchange="updateLegalProgress()"> <label for="lc5">Entity formed (LLC/C-Corp) in correct state</label></li>
+        <li><input type="checkbox" id="lc6" onchange="updateLegalProgress()"> <label for="lc6">EIN obtained from IRS</label></li>
+        <li><input type="checkbox" id="lc7" onchange="updateLegalProgress()"> <label for="lc7">Bank account opened (separate from personal)</label></li>
+        <li><input type="checkbox" id="lc8" onchange="updateLegalProgress()"> <label for="lc8">Co-founder agreement signed (if applicable)</label></li>
+      </ul>
+
+      <h3>Compliance</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="lc9" onchange="updateLegalProgress()"> <label for="lc9">Privacy Policy published + linked in App Store</label></li>
+        <li><input type="checkbox" id="lc10" onchange="updateLegalProgress()"> <label for="lc10">Terms of Service published</label></li>
+        <li><input type="checkbox" id="lc11" onchange="updateLegalProgress()"> <label for="lc11">GDPR/CCPA compliance implemented (if applicable)</label></li>
+        <li><input type="checkbox" id="lc12" onchange="updateLegalProgress()"> <label for="lc12">COPPA assessment done (if kids possible)</label></li>
+        <li><input type="checkbox" id="lc13" onchange="updateLegalProgress()"> <label for="lc13">Age rating questionnaire completed (IARC)</label></li>
+        <li><input type="checkbox" id="lc14" onchange="updateLegalProgress()"> <label for="lc14">Accessibility audit (VoiceOver, TalkBack)</label></li>
+      </ul>
+
+      <h3>Contracts & Agreements</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="lc15" onchange="updateLegalProgress()"> <label for="lc15">Contractor agreements signed (work-for-hire)</label></li>
+        <li><input type="checkbox" id="lc16" onchange="updateLegalProgress()"> <label for="lc16">NDAs with advisors/early testers</label></li>
+        <li><input type="checkbox" id="lc17" onchange="updateLegalProgress()"> <label for="lc17">RevenueCat / Stripe / Apple / Google agreements reviewed</label></li>
+        <li><input type="checkbox" id="lc18" onchange="updateLegalProgress()"> <label for="lc18">Open source license audit completed</label></li>
+      </ul>
+
+      <h3>Risk Management</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="lc19" onchange="updateLegalProgress()"> <label for="lc19">FTO search done for core features</label></li>
+        <li><input type="checkbox" id="lc20" onchange="updateLegalProgress()"> <label for="lc20">IP insurance quote obtained (optional)</label></li>
+      </ul>
+    </section>
+
+    <p style="text-align:center; margin-top:2rem; color:#6b7280;">
+      <strong>Live:</strong> <a href="https://djphamdev.github.io/app-launch-planner/">djphamdev.github.io/app-launch-planner</a>
+    </p>
+  </main>
+
+  <script>
+    // Load saved checks
+    document.addEventListener('DOMContentLoaded', function() {
+      const checks = JSON.parse(localStorage.getItem('applaunch_legal_checks') || '{}');
+      Object.keys(checks).forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.checked = checks[id];
+      });
+      updateLegalProgress();
+    });
+
+    function saveCheck(id) {
+      const checks = JSON.parse(localStorage.getItem('applaunch_legal_checks') || '{}');
+      checks[id] = document.getElementById(id).checked;
+      localStorage.setItem('applaunch_legal_checks', JSON.stringify(checks));
+      updateLegalProgress();
+    }
+
+    function updateLegalProgress() {
+      const checkboxes = document.querySelectorAll('#checklist input[type="checkbox"]');
+      let checked = 0;
+      checkboxes.forEach(function(cb) {
+        if (cb.checked) checked++;
+        saveCheck(cb.id);
+      });
+      const pct = Math.round((checked / checkboxes.length) * 100);
+      document.getElementById('legalProgress').style.width = pct + '%';
+      document.getElementById('legalProgressText').textContent = checked + ' of ' + checkboxes.length + ' completed';
+    }
+  </script>
+</body>
+</html>

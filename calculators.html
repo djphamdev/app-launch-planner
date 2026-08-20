@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculators - App Launch Planner</title>
+  <script src="/app-launch-planner/app-core.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 1000px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .calculator-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; }
+    .calc-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+    .calc-card h2 { margin-top: 0; color: #1e40af; display: flex; align-items: center; gap: 0.5rem; }
+    .input-row { display: flex; gap: 1rem; margin: 0.75rem 0; flex-wrap: wrap; }
+    .input-group { flex: 1; min-width: 150px; }
+    .input-group label { display: block; font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem; }
+    .input-group input, .input-group select { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; }
+    .input-group input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+    .result-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+    .result-box h4 { margin: 0 0 0.75rem; color: #166534; }
+    .result-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #dcfce7; }
+    .result-row:last-child { border-bottom: none; }
+    .result-label { color: #6b7280; }
+    .result-value { font-weight: 600; color: #1f2937; }
+    .result-value.positive { color: #10b981; }
+    .result-value.negative { color: #ef4444; }
+    .btn { background: #4f46e5; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 1rem; }
+    .btn:hover { background: #4338ca; }
+    .btn-secondary { background: #6b7280; }
+    .btn-secondary:hover { background: #4b5563; }
+    .preset-btns { display: flex; gap: 0.5rem; margin: 0.5rem 0; flex-wrap: wrap; }
+    .preset-btn { background: #e5e7eb; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+    .preset-btn:hover { background: #d1d5db; }
+    .preset-btn.active { background: #4f46e5; color: white; }
+    .info-tooltip { position: relative; cursor: help; }
+    .info-tooltip::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 0.5rem; border-radius: 4px; font-size: 0.75rem; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; margin-bottom: 0.5rem; }
+    .info-tooltip:hover::after { opacity: 1; }
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; margin: -2rem -2rem 2rem; border-radius: 12px 12px 0 0; }
+    .nav-bar a { color: white; text-decoration: none; margin-left: 1rem; opacity: 0.9; }
+    .nav-bar a:hover { opacity: 1; text-decoration: underline; }
+    .scenario-box { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .scenario-box h4 { margin: 0 0 0.5rem; color: #92400e; }
+  </style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <h1 style="margin:0;">📊 Business Calculators</h1>
+    <div>
+      <a href="/app-launch-planner/">Home</a>
+      <a href="/app-launch-planner/calculators.html">Calculators</a>
+      <a href="/app-launch-planner/legal.html">Legal/IP</a>
+      <a href="/app-launch-planner/prompts.html">Prompt Eng</a>
+      <a href="/app-launch-planner/notes.html">Notes</a>
+      <a href="/app-launch-planner/validator.html">Validator</a>
+      <a href="/app-launch-planner/resources.html">Resources</a>
+    </div>
+  </nav>
+
+  <main style="padding: 0 2rem 2rem;">
+    <h1 style="text-align:center; margin-bottom:0.5rem;">Business Calculators</h1>
+    <p style="text-align:center; color:#6b7280; margin-bottom:2rem;">Validate profitability before you build. All calculations stored locally.</p>
+
+    <div class="calculator-grid">
+      <!-- Market Size Calculator -->
+      <div class="calc-card">
+        <h2>🎯 Market Size (TAM/SAM/SOM)</h2>
+        <p style="color:#6b7280; font-size:0.9rem;">Estimate your addressable market and revenue potential</p>
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>Total Addressable Market (TAM)</label>
+            <input type="number" id="tam" placeholder="10000000" step="100000" data-tip="Total worldwide demand for your category">
+          </div>
+          <div class="input-group">
+            <label>Serviceable Available Market (SAM)</label>
+            <input type="number" id="sam" placeholder="" step="100000" data-tip="Portion of TAM you can realistically target (typically 10% of TAM)">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Serviceable Obtainable Market (SOM)</label>
+            <input type="number" id="som" placeholder="" step="10000" data-tip="Portion of SAM you can capture in 3-5 years (typically 1-5% of SAM)">
+          </div>
+          <div class="input-group">
+            <label>Conversion Rate (%)</label>
+            <input type="number" id="convRate" value="2" step="0.1" min="0.1" max="100" data-tip="% of SOM that becomes paying users">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Monthly Price ($)</label>
+            <input type="number" id="mktPrice" value="4.99" step="0.01" min="0" data-tip="Your subscription price">
+          </div>
+        </div>
+        
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="loadMarketPreset('fitness')">Fitness App</button>
+          <button class="preset-btn" onclick="loadMarketPreset('finance')">Finance App</button>
+          <button class="preset-btn" onclick="loadMarketPreset('productivity')">Productivity</button>
+          <button class="preset-btn" onclick="loadMarketPreset('niche')">Niche ($10K MRR)</button>
+        </div>
+        
+        <button class="btn" onclick="calculateMarket()">Calculate Market Size</button>
+        
+        <div class="result-box" id="marketResult" style="display:none;">
+          <h4>Results</h4>
+          <div class="result-row"><span class="result-label">TAM:</span><span class="result-value" id="rTam">-</span></div>
+          <div class="result-row"><span class="result-label">SAM:</span><span class="result-value" id="rSam">-</span></div>
+          <div class="result-row"><span class="result-label">SOM:</span><span class="result-value" id="rSom">-</span></div>
+          <div class="result-row"><span class="result-label">Potential Users:</span><span class="result-value" id="rUsers">-</span></div>
+          <div class="result-row"><span class="result-label">Monthly Revenue:</span><span class="result-value positive" id="rMonthly">-</span></div>
+          <div class="result-row"><span class="result-label">Yearly Revenue:</span><span class="result-value positive" id="rYearly">-</span></div>
+        </div>
+      </div>
+
+      <!-- Unit Economics Calculator -->
+      <div class="calc-card">
+        <h2>💰 Unit Economics (LTV/CAC)</h2>
+        <p style="color:#6b7280; font-size:0.9rem;">Determine if your business model is viable</p>
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>Monthly Price ($)</label>
+            <input type="number" id="uePrice" value="4.99" step="0.01" min="0">
+          </div>
+          <div class="input-group">
+            <label>Monthly Churn Rate (%)</label>
+            <input type="number" id="ueChurn" value="5" step="0.1" min="0.1" max="50" data-tip="% of users who cancel each month">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>CAC ($)</label>
+            <input type="number" id="ueCac" value="10" step="1" min="0" data-tip="Cost to acquire one paying customer">
+          </div>
+          <div class="input-group">
+            <label>COGS/Month ($)</label>
+            <input type="number" id="ueCogs" value="0.50" step="0.01" min="0" data-tip="Cost of goods sold per user (server, support, etc.)">
+          </div>
+        </div>
+        
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="loadUEPreset('subscription')">Subscription ($4.99)</button>
+          <button class="preset-btn" onclick="loadUEPreset('premium')">Premium ($9.99)</button>
+          <button class="preset-btn" onclick="loadUEPreset('high_churn')">High Churn (10%)</button>
+          <button class="preset-btn" onclick="loadUEPreset('low_cac')">Low CAC ($3)</button>
+        </div>
+        
+        <button class="btn" onclick="calculateUnitEconomics()">Calculate Unit Economics</button>
+        
+        <div class="result-box" id="ueResult" style="display:none;">
+          <h4>Results</h4>
+          <div class="result-row"><span class="result-label">LTV:</span><span class="result-value positive" id="rLtv">-</span></div>
+          <div class="result-row"><span class="result-label">CAC:</span><span class="result-value" id="rCac">-</span></div>
+          <div class="result-row"><span class="result-label">LTV:CAC Ratio:</span><span class="result-value" id="rRatio">-</span></div>
+          <div class="result-row"><span class="result-label">Payback Period:</span><span class="result-value" id="rPayback">- months</span></div>
+          <div class="result-row"><span class="result-label">Gross Margin:</span><span class="result-value" id="rMargin">-%</span></div>
+          <div class="result-row"><span class="result-label">Viable (3:1 ratio):</span><span class="result-value" id="rViable">-</span></div>
+        </div>
+        
+        <div class="scenario-box">
+          <h4>📋 Rule of Thumb</h4>
+          <ul style="margin:0; padding-left:1.2rem;">
+            <li>LTV:CAC ≥ 3:1 = Healthy</li>
+            <li>Payback < 12 months = Good</li>
+            <li>Gross Margin > 70% = SaaS standard</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Break-Even Calculator -->
+      <div class="calc-card">
+        <h2>⚖️ Break-Even Analysis</h2>
+        <p style="color:#6b7280; font-size:0.9rem;">When will your app start making money?</p>
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>Fixed Costs ($)</label>
+            <input type="number" id="beFixed" value="5000" step="100" min="0" data-tip="Dev tools, Apple/Google fees, design, legal">
+          </div>
+          <div class="input-group">
+            <label>Monthly Price ($)</label>
+            <input type="number" id="bePrice" value="4.99" step="0.01" min="0">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Variable Cost/User ($)</label>
+            <input type="number" id="beVarCost" value="0.50" step="0.01" min="0" data-tip="Server, payment processing, support per user">
+          </div>
+          <div class="input-group">
+            <label>Monthly Visitors</label>
+            <input type="number" id="beVisitors" value="500" step="100" min="0" data-tip="Expected monthly traffic to your app store page">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Conversion Rate (%)</label>
+            <input type="number" id="beConv" value="2" step="0.1" min="0.1" max="100">
+          </div>
+        </div>
+        
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="loadBEPreset('bootstrap')">Bootstrap ($2K)</button>
+          <button class="preset-btn" onclick="loadBEPreset('funded')">Funded ($50K)</button>
+          <button class="preset-btn" onclick="loadBEPreset('side_project')">Side Project ($500)</button>
+        </div>
+        
+        <button class="btn" onclick="calculateBreakEven()">Calculate Break-Even</button>
+        
+        <div class="result-box" id="beResult" style="display:none;">
+          <h4>Results</h4>
+          <div class="result-row"><span class="result-label">Contribution Margin:</span><span class="result-value" id="rMargin2">-/user</span></div>
+          <div class="result-row"><span class="result-label">Break-Even Users:</span><span class="result-value" id="rBeUsers">-</span></div>
+          <div class="result-row"><span class="result-label">Break-Even Revenue:</span><span class="result-value" id="rBeRev">-</span></div>
+          <div class="result-row"><span class="result-label">Months to Break-Even:</span><span class="result-value" id="rBeMonths">-</span></div>
+        </div>
+      </div>
+
+      <!-- ROI Calculator -->
+      <div class="calc-card">
+        <h2>📈 ROI Calculator</h2>
+        <p style="color:#6b7280; font-size:0.9rem;">Project returns over time</p>
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>Initial Investment ($)</label>
+            <input type="number" id="roiInvest" value="5000" step="100" min="0">
+          </div>
+          <div class="input-group">
+            <label>Monthly Revenue ($)</label>
+            <input type="number" id="roiRev" value="1000" step="100" min="0">
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Monthly Costs ($)</label>
+            <input type="number" id="roiCosts" value="200" step="50" min="0">
+          </div>
+          <div class="input-group">
+            <label>Projection (months)</label>
+            <input type="number" id="roiMonths" value="12" step="1" min="1" max="60">
+          </div>
+        </div>
+        
+        <div class="preset-btns">
+          <button class="preset-btn" onclick="loadROIPreset('conservative')">Conservative</button>
+          <button class="preset-btn" onclick="loadROIPreset('growth')">Growth</button>
+          <button class="preset-btn" onclick="loadROIPreset('viral')">Viral Hit</button>
+        </div>
+        
+        <button class="btn" onclick="calculateROI()">Calculate ROI</button>
+        
+        <div class="result-box" id="roiResult" style="display:none;">
+          <h4>Results</h4>
+          <div class="result-row"><span class="result-label">Total Revenue:</span><span class="result-value positive" id="rTotalRev">-</span></div>
+          <div class="result-row"><span class="result-label">Total Costs:</span><span class="result-value" id="rTotalCost">-</span></div>
+          <div class="result-row"><span class="result-label">Net Profit:</span><span class="result-value" id="rNetProfit">-</span></div>
+          <div class="result-row"><span class="result-label">ROI:</span><span class="result-value" id="rRoi">-%</span></div>
+          <div class="result-row"><span class="result-label">Payback:</span><span class="result-value" id="rPayback2">- months</span></div>
+        </div>
+      </div>
+
+      <!-- Platform Fee Calculator -->
+      <div class="calc-card">
+        <h2>🏪 Platform Fees (iOS/Android)</h2>
+        <p style="color:#6b7280; font-size:0.9rem;">Calculate net revenue after store fees</p>
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>Gross Price ($)</label>
+            <input type="number" id="pfPrice" value="4.99" step="0.01" min="0">
+          </div>
+          <div class="input-group">
+            <label>Platform</label>
+            <select id="pfPlatform">
+              <option value="both">Both (Blended)</option>
+              <option value="ios">Apple App Store</option>
+              <option value="android">Google Play</option>
+              <option value="web">Web (Stripe)</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-group">
+            <label>Monthly Subscribers</label>
+            <input type="number" id="pfSubs" value="1000" step="100" min="0">
+          </div>
+          <div class="input-group">
+            <label>Small Business Program?</label>
+            <select id="pfSBP">
+              <option value="yes">Yes (15%/10%)</option>
+              <option value="no">No (30%/15%)</option>
+            </select>
+          </div>
+        </div>
+        
+        <button class="btn" onclick="calculatePlatformFees()">Calculate Net Revenue</button>
+        
+        <div class="result-box" id="pfResult" style="display:none;">
+          <h4>Results</h4>
+          <div class="result-row"><span class="result-label">Gross Monthly:</span><span class="result-value" id="rGross">-</span></div>
+          <div class="result-row"><span class="result-label">Platform Fees:</span><span class="result-value negative" id="rFees">-</span></div>
+          <div class="result-row"><span class="result-label">Net Monthly:</span><span class="result-value positive" id="rNet">-</span></div>
+          <div class="result-row"><span class="result-label">Annual Net:</span><span class="result-value positive" id="rAnnualNet">-</span></div>
+        </div>
+      </div>
+
+      <!-- Viral Coefficient Calculator -->
+      <div class="calc-card">
+        <h2>📢 Viral Coefficient (K-Factor)</h2>
+        <p style="color:#6b7280; font-size:0.9rem;">Will your app grow organically?</p>
+        
+        <div class="input-row">
+          <div class="input-group">
+            <label>Invites Sent per User</label>
+            <input type="number" id="vcInvites" value="3" step="0.1" min="0" data-tip="Average number of invites each user sends">
+          </div>
+          <div class="input-group">
+            <label>Invite Conversion Rate (%)</label>
+            <input type="number" id="vcConv" value="15" step="1" min="0" max="100" data-tip="% of invitees who become users">
+          </div>
+        </div>
+        
+        <button class="btn" onclick="calculateViral()">Calculate K-Factor</button>
+        
+        <div class="result-box" id="vcResult" style="display:none;">
+          <h4>Results</h4>
+          <div class="result-row"><span class="result-label">K-Factor:</span><span class="result-value" id="rKFactor">-</span></div>
+          <div class="result-row"><span class="result-label">Growth Type:</span><span class="result-value" id="rGrowthType">-</span></div>
+          <div class="result-row"><span class="result-label">Users after 10 cycles (100 start):</span><span class="result-value" id="rVCycles">-</span></div>
+        </div>
+        
+        <div class="scenario-box">
+          <h4>📋 Interpretation</h4>
+          <ul style="margin:0; padding-left:1.2rem;">
+            <li>K > 1 = Viral growth 🚀</li>
+            <li>K = 0.5-1 = Strong word-of-mouth</li>
+            <li>K < 0.5 = Paid acquisition needed</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align:center; margin-top:2rem; color:#6b7280;">
+      <strong>Live:</strong> <a href="https://djphamdev.github.io/app-launch-planner/">djphamdev.github.io/app-launch-planner</a>
+    </p>
+  </main>
+
+  <script>
+    // Load presets
+    function loadMarketPreset(type) {
+      const presets = {
+        fitness: {tam:50000000, sam:5000000, som:100000, convRate:3, mktPrice:9.99},
+        finance: {tam:80000000, sam:8000000, som:200000, convRate:2.5, mktPrice:4.99},
+        productivity: {tam:100000000, sam:10000000, som:150000, convRate:2, mktPrice:3.99},
+        niche: {tam:5000000, sam:500000, som:25000, convRate:4, mktPrice:14.99}
+      };
+      const p = presets[type];
+      if(p){ document.getElementById('tam').value=p.tam; document.getElementById('sam').value=p.sam; document.getElementById('som').value=p.som; document.getElementById('convRate').value=p.convRate; document.getElementById('mktPrice').value=p.mktPrice; }
+    }
+
+    function loadUEPreset(type) {
+      const presets = {
+        subscription: {uePrice:4.99, ueChurn:5, ueCac:10, ueCogs:0.50},
+        premium: {uePrice:9.99, ueChurn:4, ueCac:25, ueCogs:1.00},
+        high_churn: {uePrice:4.99, ueChurn:10, ueCac:8, ueCogs:0.50},
+        low_cac: {uePrice:4.99, ueChurn:5, ueCac:3, ueCogs:0.50}
+      };
+      const p = presets[type];
+      if(p){ Object.keys(p).forEach(k=>document.getElementById(k).value=p[k]); }
+    }
+
+    function loadBEPreset(type) {
+      const presets = {
+        bootstrap: {beFixed:2000, bePrice:4.99, beVarCost:0.30, beVisitors:200, beConv:1.5},
+        funded: {beFixed:50000, bePrice:9.99, beVarCost:1.00, beVisitors:5000, beConv:3},
+        side_project: {beFixed:500, bePrice:2.99, beVarCost:0.15, beVisitors:100, beConv:2}
+      };
+      const p = presets[type];
+      if(p){ Object.keys(p).forEach(k=>document.getElementById(k).value=p[k]); }
+    }
+
+    function loadROIPreset(type) {
+      const presets = {
+        conservative: {roiInvest:5000, roiRev:500, roiCosts:100, roiMonths:12},
+        growth: {roiInvest:10000, roiRev:5000, roiCosts:1000, roiMonths:18},
+        viral: {roiInvest:3000, roiRev:20000, roiCosts:2000, roiMonths:6}
+      };
+      const p = presets[type];
+      if(p){ Object.keys(p).forEach(k=>document.getElementById(k).value=p[k]); }
+    }
+
+    // Calculations
+    function calculateMarket() {
+      const data = {
+        tam: parseFloat(document.getElementById('tam').value) || 0,
+        sam: parseFloat(document.getElementById('sam').value) || 0,
+        som: parseFloat(document.getElementById('som').value) || 0,
+        conversionRate: (parseFloat(document.getElementById('convRate').value) || 2) / 100,
+        price: parseFloat(document.getElementById('mktPrice').value) || 4.99
+      };
+      const r = AppLaunch.calculator.calculateMarketSize(data);
+      document.getElementById('rTam').textContent = formatNumber(r.tam);
+      document.getElementById('rSam').textContent = formatNumber(r.sam);
+      document.getElementById('rSom').textContent = formatNumber(r.som);
+      document.getElementById('rUsers').textContent = formatNumber(Math.round(r.potentialUsers));
+      document.getElementById('rMonthly').textContent = '$' + formatNumber(r.monthlyRevenue.toFixed(2));
+      document.getElementById('rYearly').textContent = '$' + formatNumber(r.yearlyRevenue.toFixed(2));
+      document.getElementById('marketResult').style.display = 'block';
+      saveCalc('market', data, r);
+    }
+
+    function calculateUnitEconomics() {
+      const data = {
+        price: parseFloat(document.getElementById('uePrice').value) || 4.99,
+        churnRate: (parseFloat(document.getElementById('ueChurn').value) || 5) / 100,
+        cac: parseFloat(document.getElementById('ueCac').value) || 10,
+        cogs: parseFloat(document.getElementById('ueCogs').value) || 0.50
+      };
+      const r = AppLaunch.calculator.calculateUnitEconomics(data);
+      document.getElementById('rLtv').textContent = '$' + r.ltv;
+      document.getElementById('rCac').textContent = '$' + r.cac;
+      document.getElementById('rRatio').textContent = r.ltvCacRatio + ':1';
+      document.getElementById('rPayback').textContent = r.paybackMonths;
+      document.getElementById('rMargin').textContent = r.grossMargin + '%';
+      document.getElementById('rViable').textContent = r.profitable ? '✅ YES' : '❌ NO';
+      document.getElementById('rViable').className = 'result-value ' + (r.profitable ? 'positive' : 'negative');
+      document.getElementById('ueResult').style.display = 'block';
+      saveCalc('unitEconomics', data, r);
+    }
+
+    function calculateBreakEven() {
+      const data = {
+        fixedCosts: parseFloat(document.getElementById('beFixed').value) || 5000,
+        price: parseFloat(document.getElementById('bePrice').value) || 4.99,
+        variableCost: parseFloat(document.getElementById('beVarCost').value) || 0.50,
+        monthlyUsers: parseFloat(document.getElementById('beVisitors').value) || 500,
+        conversionRate: (parseFloat(document.getElementById('beConv').value) || 2) / 100
+      };
+      const r = AppLaunch.calculator.calculateBreakEven(data);
+      document.getElementById('rMargin2').textContent = '$' + r.contributionMargin;
+      document.getElementById('rBeUsers').textContent = formatNumber(r.breakEvenUnits);
+      document.getElementById('rBeRev').textContent = '$' + formatNumber(r.breakEvenRevenue.toFixed(2));
+      document.getElementById('rBeMonths').textContent = r.monthsToBreakEven;
+      document.getElementById('beResult').style.display = 'block';
+      saveCalc('breakEven', data, r);
+    }
+
+    function calculateROI() {
+      const data = {
+        investment: parseFloat(document.getElementById('roiInvest').value) || 5000,
+        monthlyRevenue: parseFloat(document.getElementById('roiRev').value) || 0,
+        monthlyCosts: parseFloat(document.getElementById('roiCosts').value) || 0,
+        months: parseFloat(document.getElementById('roiMonths').value) || 12
+      };
+      const r = AppLaunch.calculator.calculateROI(data);
+      document.getElementById('rTotalRev').textContent = '$' + formatNumber(r.totalRevenue.toFixed(2));
+      document.getElementById('rTotalCost').textContent = '$' + formatNumber(r.totalCosts.toFixed(2));
+      document.getElementById('rNetProfit').textContent = '$' + formatNumber(r.netProfit.toFixed(2));
+      document.getElementById('rNetProfit').className = 'result-value ' + (r.netProfit >= 0 ? 'positive' : 'negative');
+      document.getElementById('rRoi').textContent = r.roi + '%';
+      document.getElementById('rRoi').className = 'result-value ' + (r.roi >= 0 ? 'positive' : 'negative');
+      document.getElementById('rPayback2').textContent = r.paybackMonths;
+      document.getElementById('roiResult').style.display = 'block';
+      saveCalc('roi', data, r);
+    }
+
+    function calculatePlatformFees() {
+      const price = parseFloat(document.getElementById('pfPrice').value) || 4.99;
+      const subs = parseFloat(document.getElementById('pfSubs').value) || 0;
+      const platform = document.getElementById('pfPlatform').value;
+      const sbp = document.getElementById('pfSBP').value === 'yes';
+      
+      let feeRate;
+      if (platform === 'ios') feeRate = sbp ? 0.15 : 0.30;
+      else if (platform === 'android') feeRate = sbp ? 0.10 : 0.15;
+      else if (platform === 'web') feeRate = 0.029 + 0.30/price; // Stripe
+      else feeRate = (sbp ? 0.125 : 0.225); // blended average
+      
+      const gross = price * subs;
+      const fees = gross * feeRate;
+      const net = gross - fees;
+      
+      document.getElementById('rGross').textContent = '$' + formatNumber(gross.toFixed(2));
+      document.getElementById('rFees').textContent = '$' + formatNumber(fees.toFixed(2));
+      document.getElementById('rNet').textContent = '$' + formatNumber(net.toFixed(2));
+      document.getElementById('rAnnualNet').textContent = '$' + formatNumber((net * 12).toFixed(2));
+      document.getElementById('pfResult').style.display = 'block';
+      saveCalc('platformFees', {price, subs, platform, sbp}, {gross, fees, net, annual: net*12});
+    }
+
+    function calculateViral() {
+      const invites = parseFloat(document.getElementById('vcInvites').value) || 0;
+      const conv = (parseFloat(document.getElementById('vcConv').value) || 0) / 100;
+      const k = invites * conv;
+      
+      let growthType;
+      if (k > 1) growthType = '🚀 Viral (exponential)';
+      else if (k > 0.5) growthType = '📈 Strong word-of-mouth';
+      else if (k > 0.2) growthType = '📊 Moderate organic';
+      else growthType = '💰 Paid acquisition required';
+      
+      // Calculate after 10 cycles starting with 100 users
+      let users = 100;
+      for(let i=0; i<10; i++) {
+        users = users + users * k;
+      }
+      
+      document.getElementById('rKFactor').textContent = k.toFixed(3);
+      document.getElementById('rGrowthType').textContent = growthType;
+      document.getElementById('rVCycles').textContent = formatNumber(Math.round(users));
+      document.getElementById('vcResult').style.display = 'block';
+      saveCalc('viral', {invites, conv}, {k, growthType, cycles10: Math.round(users)});
+    }
+
+    function formatNumber(n) {
+      return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function saveCalc(type, input, result) {
+      const calc = {type, input, result, timestamp: new Date().toISOString()};
+      const stored = JSON.parse(localStorage.getItem('applaunch_calculations') || '[]');
+      stored.unshift(calc);
+      if (stored.length > 50) stored.pop();
+      localStorage.setItem('applaunch_calculations', JSON.stringify(stored));
+    }
+
+    // Load saved calculations on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const stored = JSON.parse(localStorage.getItem('applaunch_calculations') || '[]');
+      // Could restore last used values here
+    });
+  </script>
+</body>
+</html>

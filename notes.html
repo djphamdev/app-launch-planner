@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes & Ideas - App Launch Planner</title>
+  <script src="/app-launch-planner/app-core.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    .notes-layout { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .notes-layout { grid-template-columns: 1fr; } }
+    
+    .sidebar { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; height: fit-content; position: sticky; top: 2rem; }
+    .main-content { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; min-height: 600px; }
+    
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; margin: -2rem -2rem 2rem; border-radius: 12px 12px 0 0; }
+    .nav-bar a { color: white; text-decoration: none; margin-left: 1rem; opacity: 0.9; }
+    .nav-bar a:hover { opacity: 1; text-decoration: underline; }
+    
+    .search-box { position: relative; margin-bottom: 1rem; }
+    .search-box input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; }
+    .search-box input:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+    .search-box svg { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+    
+    .filter-tabs { display: flex; gap: 0.25rem; margin-bottom: 1rem; }
+    .filter-tab { flex: 1; padding: 0.5rem; border: none; background: #f3f4f6; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    .filter-tab.active { background: #4f46e5; color: white; }
+    
+    .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .tag { background: #e5e7eb; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+    .tag:hover { background: #d1d5db; }
+    .tag.active { background: #4f46e5; color: white; }
+    .tag .count { margin-left: 0.5rem; opacity: 0.7; font-size: 0.75rem; }
+    
+    .note-list { max-height: 60vh; overflow-y: auto; }
+    .note-item { padding: 1rem; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: background 0.15s; }
+    .note-item:hover { background: #f9fafb; }
+    .note-item.active { background: #eff6ff; border-left: 3px solid #4f46e5; }
+    .note-title { font-weight: 600; margin-bottom: 0.25rem; color: #1f2937; }
+    .note-meta { display: flex; gap: 0.5rem; font-size: 0.75rem; color: #9ca3af; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .note-tag { background: #e5e7eb; padding: 0.1rem 0.5rem; border-radius: 4px; }
+    .note-preview { color: #6b7280; font-size: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    
+    .editor-toolbar { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb; }
+    .editor-toolbar button { background: #f3f4f6; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .editor-toolbar button:hover { background: #e5e7eb; }
+    .editor-toolbar button.active { background: #4f46e5; color: white; }
+    
+    .editor-area { width: 100%; min-height: 400px; padding: 1rem; border: 1px solid #d1d5db; border-radius: 8px; font-family: inherit; font-size: 1rem; line-height: 1.7; resize: vertical; }
+    .editor-area:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+    
+    .note-header { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .note-header input { flex: 1; min-width: 200px; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 1.1rem; font-weight: 600; }
+    .note-header input:focus { outline: none; border-color: #4f46e5; }
+    .phase-select { padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; background: white; }
+    
+    .action-buttons { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .btn { background: #4f46e5; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; }
+    .btn:hover { background: #4338ca; }
+    .btn-secondary { background: #6b7280; }
+    .btn-danger { background: #ef4444; }
+    .btn-ghost { background: transparent; color: #4f46e5; border: 1px solid #4f46e5; }
+    
+    .template-modal, .export-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 100; }
+    .modal-content { background: white; border-radius: 12px; padding: 2rem; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-content h3 { margin-top: 0; }
+    .template-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .template-card { border: 2px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; cursor: pointer; transition: all 0.2s; }
+    .template-card:hover { border-color: #4f46e5; }
+    .template-card.selected { border-color: #4f46e5; background: #eff6ff; }
+    .template-card h4 { margin: 0 0 0.5rem; color: #1f2937; }
+    .template-card p { margin: 0; color: #6b7280; font-size: 0.9rem; }
+    
+    .collab-section { background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1.5rem; margin-top: 2rem; }
+    .collab-section h3 { margin-top: 0; color: #166534; }
+    
+    .empty-state { text-align: center; padding: 3rem; color: #9ca3af; }
+    .empty-state svg { width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.5; }
+    
+    .stat-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    .stat-box { flex: 1; background: #f3f4f6; padding: 1rem; border-radius: 8px; text-align: center; }
+    .stat-value { font-size: 1.5rem; font-weight: 700; color: #4f46e5; }
+    .stat-label { font-size: 0.8rem; color: #6b7280; }
+    
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <h1 style="margin:0;">📝 Notes & Ideas</h1>
+    <div>
+      <a href="/app-launch-planner/">Home</a>
+      <a href="/app-launch-planner/calculators.html">Calculators</a>
+      <a href="/app-launch-planner/legal.html">Legal/IP</a>
+      <a href="/app-launch-planner/prompts.html">Prompt Eng</a>
+      <a href="/app-launch-planner/notes.html">Notes</a>
+      <a href="/app-launch-planner/validator.html">Validator</a>
+      <a href="/app-launch-planner/resources.html">Resources</a>
+    </div>
+  </nav>
+
+  <main style="padding: 0 2rem 2rem;">
+    <div class="notes-layout">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h2 style="margin:0;">Notes</h2>
+          <button class="btn" onclick="newNote()">+ New</button>
+        </div>
+
+        <div class="search-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="noteSearch" placeholder="Search notes..." oninput="filterNotes()">
+        </div>
+
+        <div class="filter-tabs">
+          <button class="filter-tab active" onclick="setFilter('all')">All</button>
+          <button class="filter-tab" onclick="setFilter('phase0')">Inbox</button>
+          <button class="filter-tab" onclick="setFilter('phase1')">Phase 1</button>
+          <button class="filter-tab" onclick="setFilter('phase2')">Phase 2</button>
+          <button class="filter-tab" onclick="setFilter('phase3')">Phase 3</button>
+          <button class="filter-tab" onclick="setFilter('phase4')">Phase 4</button>
+          <button class="filter-tab" onclick="setFilter('pinned')">★ Pinned</button>
+        </div>
+
+        <div class="tag-cloud" id="tagCloud"></div>
+
+        <div class="stat-row">
+          <div class="stat-box"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total</div></div>
+          <div class="stat-box"><div class="stat-value" id="statPinned">0</div><div class="stat-label">Pinned</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="stat-value" id="statIdeas">0</div><div class="stat-label">Ideas</div></div>
+          <div class="stat-box"><div class="stat-value" id="statValidated">0</div><div class="stat-label">Validated</div></div>
+        </div>
+
+        <div class="note-list" id="noteList">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 000 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 010-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+            <p>No notes yet</p>
+            <button class="btn" onclick="newNote()" style="margin-top:1rem;">Create First Note</button>
+          </div>
+        </div>
+
+        <div class="collab-section">
+          <h3>🤝 Collaborate</h3>
+          <p style="font-size:0.9rem; margin-bottom:1rem;">Share your research with your friend. Export imports all notes, ideas, calculations, and prompts.</p>
+          <button class="btn" onclick="exportCollab()">📤 Export Package</button>
+          <button class="btn-secondary" onclick="document.getElementById('importCollab').click()">📥 Import Package</button>
+          <input type="file" id="importCollab" accept=".json" style="display:none;" onchange="importCollab(event)">
+        </div>
+      </aside>
+
+      <!-- Main Editor -->
+      <section class="main-content">
+        <div id="editorView">
+          <div class="note-header">
+            <input type="text" id="noteTitle" placeholder="Note title..." disabled>
+            <select id="notePhase" class="phase-select" disabled onchange="updateNotePhase()">
+              <option value="0">📥 Inbox / Raw</option>
+              <option value="1">🔎 Phase 1: Market Mining</option>
+              <option value="2">🔍 Phase 2: Competitive Analysis</option>
+              <option value="3">💡 Phase 3: Validation</option>
+              <option value="4">🚀 Phase 4: Build</option>
+            </select>
+            <button class="btn-ghost" id="pinBtn" onclick="togglePin()" disabled>★ Pin</button>
+            <button class="btn-danger" id="deleteBtn" onclick="deleteNote()" disabled>🗑️ Delete</button>
+          </div>
+
+          <div class="editor-toolbar">
+            <button onclick="formatText('bold')" title="Bold (Ctrl+B)"><strong>B</strong></button>
+            <button onclick="formatText('italic')" title="Italic (Ctrl+I)"><em>I</em></button>
+            <button onclick="formatText('strikethrough')" title="Strikethrough"><s>S</s></button>
+            <button onclick="formatText('insertUnorderedList')" title="Bullet List">• List</button>
+            <button onclick="formatText('insertOrderedList')" title="Numbered List">1. List</button>
+            <button onclick="formatText('formatBlock', 'blockquote')" title="Quote">❝ Quote</button>
+            <button onclick="formatText('formatBlock', 'h2')" title="Heading 2">H2</button>
+            <button onclick="formatText('formatBlock', 'h3')" title="Heading 3">H3</button>
+            <button onclick="formatText('formatBlock', 'p')" title="Paragraph">¶ Para</button>
+            <button onclick="insertTemplate()" style="margin-left:auto;">📋 Template</button>
+          </div>
+
+          <div id="editorPlaceholder" class="empty-state" style="padding:3rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 000 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 010-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+            <h3>Select a note or create new</h3>
+            <p>Your research, ideas, and validation notes — all stored locally</p>
+            <button class="btn" onclick="newNote()" style="margin-top:1rem;">+ Create Note</button>
+          </div>
+
+          <textarea class="editor-area hidden" id="noteContent" placeholder="Start writing... Markdown supported" oninput="autoSave()" spellcheck="true"></textarea>
+        </div>
+      </section>
+    </div>
+
+    <!-- Template Modal -->
+    <div class="template-modal hidden" id="templateModal">
+      <div class="modal-content">
+        <h3>📋 Choose Template</h3>
+        <p style="color:#6b7280; margin-bottom:1.5rem;">Select a template to insert at cursor position</p>
+        <div class="template-grid" id="templateGrid"></div>
+        <button class="btn-secondary" onclick="closeTemplateModal()" style="width:100%;">Cancel</button>
+      </div>
+    </div>
+
+    <p style="text-align:center; margin-top:2rem; color:#6b7280;">
+      <strong>Live:</strong> <a href="https://djphamdev.github.io/app-launch-planner/">djphamdev.github.io/app-launch-planner</a>
+    </p>
+  </main>
+
+  <script>
+    // State
+    let notes = [];
+    let currentNoteId = null;
+    let currentFilter = 'all';
+    let currentTag = null;
+    let searchQuery = '';
+    let autoSaveTimer = null;
+
+    // Templates
+    const TEMPLATES = [
+      {id:'market', title:'Market Research', content:`# Market Research: [Category]
+
+## Target Category
+- Category:
+- Sub-niche:
+
+## TAM/SAM/SOM
+- TAM:
+- SAM:
+- SOM:
+
+## Key Competitors
+1. [App] - Strengths/Weaknesses:
+2. [App] - Strengths/Weaknesses:
+3. [App] - Strengths/Weaknesses:
+
+## Pain Points from Reviews
+- 
+- 
+- 
+
+## Opportunity
+`},
+      {id:'competitor', title:'Competitor Analysis', content:`# Competitor Analysis: [App Name]
+
+## App Store Info
+- Name:
+- Price:
+- Rating:
+- Downloads (est):
+
+## Features
+| Feature | Has? | Quality | Notes |
+|---------|------|---------|-------|
+|         |      |         |       |
+
+## Reviews Analysis (50 negative)
+- Complaint 1:
+- Complaint 2:
+- Complaint 3:
+
+## Weaknesses to Exploit
+1.
+2.
+3.
+
+## Our Differentiation
+`},
+      {id:'validation', title:'Validation Plan', content:`# Validation: [Idea Name]
+
+## Hypothesis
+People want [solution] because [pain point].
+
+## Experiment
+- Type: Landing Page / Survey / Pre-order / Interview
+- Target: [audience]
+- Channel: [Reddit/FB/Google/Twitter]
+- Budget: $
+- Duration: days
+
+## Success Criteria
+- CTR > 5%
+- Signups > 20
+- Pre-orders > 5
+
+## Results
+- Visitors:
+- Clicks:
+- Conversions:
+- Decision: Proceed / Pivot / Kill
+`},
+      {id:'build', title:'Build Sprint', content:`# Build Sprint: [Feature/App]
+
+## Sprint Goal
+Ship [feature] in [days] days.
+
+## Tasks
+- [ ] Task 1
+- [ ] Task 2
+- [ ] Task 3
+
+## Tech Decisions
+- Stack:
+- Architecture:
+- Libraries:
+
+## Blockers
+- 
+
+## Daily Log
+Day 1:
+Day 2:
+`},
+      {id:'legal', title:'Legal Checklist', content:`# Legal Checklist: [App Name]
+
+## Trademark
+- [ ] USPTO search
+- [ ] App Store search
+- [ ] Domain secured
+- [ ] Social handles
+- [ ] ITU filed
+
+## Compliance
+- [ ] Privacy Policy
+- [ ] Terms of Service
+- [ ] GDPR/CCPA
+- [ ] Age rating
+
+## Contracts
+- [ ] Co-founder agreement
+- [ ] Contractor agreements
+- [ ] NDAs
+
+## App Store
+- [ ] Guidelines review
+- [ ] Screenshots ready
+- [ ] Description optimized
+`},
+      {id:'meeting', title:'Meeting Notes', content:`# Meeting: [Topic] - [Date]
+
+## Attendees
+- 
+
+## Agenda
+1. 
+2. 
+3. 
+
+## Decisions
+- 
+
+## Action Items
+- [ ] @person: Task (due: )
+- [ ] @person: Task (due: )
+
+## Notes
+`},
+    ];
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      loadNotes();
+      renderNoteList();
+      renderTagCloud();
+      updateStats();
+    });
+
+    // Storage
+    function loadNotes() {
+      const stored = localStorage.getItem('applaunch_notes');
+      if (stored) notes = JSON.parse(stored);
+      // Also load ideas for stats
+      const ideas = JSON.parse(localStorage.getItem('applaunch_ideas') || '[]');
+      window.ideasCache = ideas;
+    }
+
+    function saveNotes() {
+      localStorage.setItem('applaunch_notes', JSON.stringify(notes));
+      renderNoteList();
+      renderTagCloud();
+      updateStats();
+    }
+
+    // Note CRUD
+    function newNote() {
+      const note = new AppLaunch.models.Note({
+        title: 'Untitled Note',
+        content: '',
+        phase: currentFilter.replace('phase','') || 0,
+        tags: []
+      });
+      notes.unshift(note);
+      saveNotes();
+      selectNote(note.id);
+    }
+
+    function selectNote(id) {
+      currentNoteId = id;
+      const note = notes.find(n => n.id === id);
+      if (!note) return;
+
+      document.querySelectorAll('.note-item').forEach(el => el.classList.remove('active'));
+      document.querySelector(`[data-id="${id}"]`)?.classList.add('active');
+
+      document.getElementById('editorPlaceholder').classList.add('hidden');
+      document.getElementById('noteContent').classList.remove('hidden');
+      document.getElementById('noteTitle').disabled = false;
+      document.getElementById('notePhase').disabled = false;
+      document.getElementById('pinBtn').disabled = false;
+      document.getElementById('deleteBtn').disabled = false;
+
+      document.getElementById('noteTitle').value = note.title;
+      document.getElementById('notePhase').value = note.phase;
+      document.getElementById('noteContent').value = note.content;
+      document.getElementById('pinBtn').textContent = note.pinned ? '★ Pinned' : '☆ Unpin';
+    }
+
+    function autoSave() {
+      if (!currentNoteId) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        const note = notes.find(n => n.id === currentNoteId);
+        if (note) {
+          note.title = document.getElementById('noteTitle').value || 'Untitled';
+          note.content = document.getElementById('noteContent').value;
+          note.phase = parseInt(document.getElementById('notePhase').value);
+          note.updatedAt = new Date().toISOString();
+          saveNotes();
+        }
+      }, 500);
+    }
+
+    function updateNotePhase() {
+      if (!currentNoteId) return;
+      const note = notes.find(n => n.id === currentNoteId);
+      if (note) {
+        note.phase = parseInt(document.getElementById('notePhase').value);
+        note.updatedAt = new Date().toISOString();
+        saveNotes();
+      }
+    }
+
+    function togglePin() {
+      if (!currentNoteId) return;
+      const note = notes.find(n => n.id === currentNoteId);
+      if (note) {
+        note.pinned = !note.pinned;
+        note.updatedAt = new Date().toISOString();
+        document.getElementById('pinBtn').textContent = note.pinned ? '★ Pinned' : '☆ Unpin';
+        saveNotes();
+      }
+    }
+
+    function deleteNote() {
+      if (!currentNoteId) return;
+      if (!confirm('Delete this note?')) return;
+      notes = notes.filter(n => n.id !== currentNoteId);
+      currentNoteId = null;
+      saveNotes();
+      resetEditor();
+    }
+
+    function resetEditor() {
+      document.getElementById('editorPlaceholder').classList.remove('hidden');
+      document.getElementById('noteContent').classList.add('hidden');
+      document.getElementById('noteTitle').disabled = true;
+      document.getElementById('notePhase').disabled = true;
+      document.getElementById('pinBtn').disabled = true;
+      document.getElementById('deleteBtn').disabled = true;
+      document.getElementById('noteTitle').value = '';
+      document.getElementById('noteContent').value = '';
+      document.querySelectorAll('.note-item').forEach(el => el.classList.remove('active'));
+    }
+
+    // Editor
+    function formatText(cmd, value) {
+      document.execCommand(cmd, false, value);
+      document.getElementById('noteContent').focus();
+      autoSave();
+    }
+
+    function insertTemplate() {
+      document.getElementById('templateModal').classList.remove('hidden');
+      renderTemplates();
+    }
+
+    function renderTemplates() {
+      document.getElementById('templateGrid').innerHTML = TEMPLATES.map(t => `
+        <div class="template-card" onclick="applyTemplate('${t.id}')">
+          <h4>${t.title}</h4>
+          <p>${t.content.split('\n').slice(0,3).join('\n')}...</p>
+        </div>
+      `).join('');
+    }
+
+    function applyTemplate(id) {
+      const template = TEMPLATES.find(t => t.id === id);
+      if (!template) return;
+      const textarea = document.getElementById('noteContent');
+      const pos = textarea.selectionStart;
+      const before = textarea.value.substring(0, pos);
+      const after = textarea.value.substring(pos);
+      textarea.value = before + '\n\n' + template.content + '\n\n' + after;
+      textarea.focus();
+      autoSave();
+      closeTemplateModal();
+    }
+
+    function closeTemplateModal() {
+      document.getElementById('templateModal').classList.add('hidden');
+    }
+
+    // Filtering & Search
+    function setFilter(filter) {
+      currentFilter = filter;
+      currentTag = null;
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+      renderNoteList();
+    }
+
+    function filterNotes() {
+      searchQuery = document.getElementById('noteSearch').value.toLowerCase();
+      renderNoteList();
+    }
+
+    function filterByTag(tag) {
+      currentTag = currentTag === tag ? null : tag;
+      currentFilter = 'all';
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tag').forEach(t => t.classList.toggle('active', t.dataset.tag === currentTag));
+      renderNoteList();
+    }
+
+    function getFilteredNotes() {
+      let filtered = notes;
+      
+      if (currentFilter !== 'all') {
+        if (currentFilter === 'pinned') {
+          filtered = filtered.filter(n => n.pinned);
+        } else {
+          const phaseNum = parseInt(currentFilter.replace('phase',''));
+          filtered = filtered.filter(n => n.phase === phaseNum);
+        }
+      }
+      
+      if (currentTag) {
+        filtered = filtered.filter(n => n.tags.includes(currentTag));
+      }
+      
+      if (searchQuery) {
+        filtered = filtered.filter(n => 
+          n.title.toLowerCase().includes(searchQuery) ||
+          n.content.toLowerCase().includes(searchQuery) ||
+          n.tags.some(t => t.toLowerCase().includes(searchQuery))
+        );
+      }
+      
+      // Sort: pinned first, then by updatedAt desc
+      filtered.sort((a,b) => {
+        if (a.pinned !== b.pinned) return b.pinned - a.pinned;
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      });
+      
+      return filtered;
+    }
+
+    function renderNoteList() {
+      const filtered = getFilteredNotes();
+      const container = document.getElementById('noteList');
+      
+      if (!filtered.length) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 000 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 010-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
+            <p>${notes.length ? 'No notes match filter' : 'No notes yet'}</p>
+            <button class="btn" onclick="newNote()" style="margin-top:1rem;">${notes.length ? 'Clear Filter' : 'Create First Note'}</button>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = filtered.map(note => `
+        <div class="note-item ${note.id === currentNoteId ? 'active' : ''}" data-id="${note.id}" onclick="selectNote('${note.id}')">
+          <div class="note-title">${note.pinned ? '★ ' : ''}${escapeHtml(note.title)}</div>
+          <div class="note-meta">
+            <span>Phase ${note.phase}</span>
+            ${note.tags.map(t => `<span class="note-tag">${escapeHtml(t)}</span>`).join('')}
+          </div>
+          <div class="note-preview">${escapeHtml(note.content.substring(0,120))}${note.content.length > 120 ? '...' : ''}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderTagCloud() {
+      const tagCounts = {};
+      notes.forEach(note => {
+        note.tags.forEach(tag => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+      });
+      
+      const container = document.getElementById('tagCloud');
+      const tags = Object.entries(tagCounts).sort((a,b) => b[1] - a[1]);
+      
+      if (!tags.length) {
+        container.innerHTML = '<p style="color:#9ca3af; font-size:0.85rem;">No tags yet. Add tags in note content with #tag</p>';
+        return;
+      }
+      
+      container.innerHTML = tags.map(([tag, count]) => `
+        <span class="tag ${currentTag === tag ? 'active' : ''}" data-tag="${tag}" onclick="filterByTag('${tag}')">
+          #${escapeHtml(tag)} <span class="count">${count}</span>
+        </span>
+      `).join('');
+    }
+
+    function updateStats() {
+      const ideas = window.ideasCache || [];
+      document.getElementById('statTotal').textContent = notes.length;
+      document.getElementById('statPinned').textContent = notes.filter(n => n.pinned).length;
+      document.getElementById('statIdeas').textContent = ideas.length;
+      document.getElementById('statValidated').textContent = ideas.filter(i => i.status === 'validated').length;
+    }
+
+    // Extract tags from content
+    function extractTags(content) {
+      const matches = content.match(/#[\w-]+/g);
+      return matches ? [...new Set(matches.map(m => m.slice(1)))] : [];
+    }
+
+    // Override autoSave to extract tags
+    const originalAutoSave = autoSave;
+    autoSave = function() {
+      if (!currentNoteId) return;
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        const note = notes.find(n => n.id === currentNoteId);
+        if (note) {
+          const content = document.getElementById('noteContent').value;
+          note.title = document.getElementById('noteTitle').value || 'Untitled';
+          note.content = content;
+          note.phase = parseInt(document.getElementById('notePhase').value);
+          note.tags = extractTags(content);
+          note.updatedAt = new Date().toISOString();
+          saveNotes();
+        }
+      }, 500);
+    };
+
+    // Collaboration Export/Import
+    function exportCollab() {
+      const data = {
+        notes: notes,
+        ideas: JSON.parse(localStorage.getItem('applaunch_ideas') || '[]'),
+        calculations: JSON.parse(localStorage.getItem('applaunch_calculations') || '[]'),
+        prompts: JSON.parse(localStorage.getItem('applaunch_prompt_library') || '[]'),
+        validations: JSON.parse(localStorage.getItem('applaunch_validations') || '[]'),
+        legal: JSON.parse(localStorage.getItem('applaunch_legal_checks') || '{}'),
+        settings: AppLaunch.storage.getSettings(),
+        exportedAt: new Date().toISOString(),
+        version: '2.0'
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'applaunch-export-' + new Date().toISOString().split('T')[0] + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importCollab(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (data.notes) {
+            notes = data.notes;
+            localStorage.setItem('applaunch_notes', JSON.stringify(notes));
+          }
+          if (data.ideas) localStorage.setItem('applaunch_ideas', JSON.stringify(data.ideas));
+          if (data.calculations) localStorage.setItem('applaunch_calculations', JSON.stringify(data.calculations));
+          if (data.prompts) localStorage.setItem('applaunch_prompt_library', JSON.stringify(data.prompts));
+          if (data.validations) localStorage.setItem('applaunch_validations', JSON.stringify(data.validations));
+          if (data.legal) localStorage.setItem('applaunch_legal_checks', JSON.stringify(data.legal));
+          if (data.settings) AppLaunch.storage.saveSettings(data.settings);
+          
+          loadNotes();
+          renderNoteList();
+          renderTagCloud();
+          updateStats();
+          resetEditor();
+          alert('Imported successfully! Refreshing data...');
+        } catch (err) {
+          alert('Invalid import file: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); formatText('bold'); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); formatText('italic'); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); newNote(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); autoSave(); }
+    });
+  </script>
+</body>
+</html>
