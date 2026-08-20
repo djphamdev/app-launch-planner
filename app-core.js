@@ -20,13 +20,56 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_SETTINGS = {
-  theme: 'system',
+  theme: 'dark',
   currency: 'USD',
   defaultPlatform: 'both',
   notifications: true,
   autoSave: true,
   exportFormat: 'json'
 };
+
+var Theme = {
+  key: 'applaunch_theme',
+  get: function() {
+    try {
+      var dedicated = localStorage.getItem(this.key);
+      if (dedicated === 'light' || dedicated === 'dark') return dedicated;
+      var raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && (parsed.theme === 'light' || parsed.theme === 'dark')) return parsed.theme;
+      }
+    } catch (e) { /* keep default */ }
+    return 'dark';
+  },
+  apply: function(theme) {
+    var next = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    document.documentElement.style.colorScheme = next;
+    var btn = document.querySelector('.alp-theme');
+    if (btn) {
+      var dark = next === 'dark';
+      btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+      btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      btn.title = dark ? 'Light mode' : 'Dark mode';
+    }
+  },
+  toggle: function() {
+    var next = this.get() === 'dark' ? 'light' : 'dark';
+    try {
+      localStorage.setItem(this.key, next);
+      var raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+      var settings = raw ? JSON.parse(raw) : {};
+      if (!settings || typeof settings !== 'object' || Array.isArray(settings)) settings = {};
+      settings.theme = next;
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+    } catch (e) { /* private mode */ }
+    this.apply(next);
+    return next;
+  }
+};
+
+Theme.apply(Theme.get());
 
 class StorageManager {
   constructor() {
@@ -659,9 +702,15 @@ var SiteNav = {
           '<span class="alp-brand-text">AppLaunch Planner<span class="alp-brand-sub">Sherpa for indie apps</span></span>' +
         '</a>' +
         '<nav class="alp-primary" aria-label="Toolkit">' + toolLinks + '</nav>' +
-        '<a class="alp-hub" href="' + href('index.html') + '"' + cur('home', current) + '>' +
-          '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 2.2 1.8 7.1h1.7V14h4.1V9.6h2.8V14h4.1V7.1h1.7L8 2.2z"/></svg>' +
-          'Hub</a>' +
+        '<div class="alp-actions">' +
+          '<button type="button" class="alp-theme" aria-pressed="true" aria-label="Switch to light mode" title="Light mode">' +
+            '<svg class="alp-theme-moon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 14.3A8.5 8.5 0 0 1 9.7 3 8.6 8.6 0 1 0 21 14.3z"/></svg>' +
+            '<svg class="alp-theme-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>' +
+          '</button>' +
+          '<a class="alp-hub" href="' + href('index.html') + '"' + cur('home', current) + '>' +
+            '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 2.2 1.8 7.1h1.7V14h4.1V9.6h2.8V14h4.1V7.1h1.7L8 2.2z"/></svg>' +
+            'Hub</a>' +
+        '</div>' +
       '</div>' +
       '<nav class="alp-trail" aria-label="Sherpa phases">' + trail + '</nav>' +
       '<div id="alp-drawer" class="alp-drawer">' +
@@ -672,6 +721,15 @@ var SiteNav = {
       '</div>';
 
     document.body.insertBefore(chrome, document.body.firstChild);
+    Theme.apply(Theme.get());
+
+    var themeBtn = chrome.querySelector('.alp-theme');
+    if (themeBtn) {
+      themeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        Theme.toggle();
+      });
+    }
 
     var main = document.querySelector('main');
     if (main && !main.id) main.id = 'alp-main';
@@ -779,6 +837,7 @@ window.AppLaunch = {
   prompts: PromptEngine,
   legal: LegalGuide,
   nav: SiteNav,
+  theme: Theme,
   STORAGE_KEYS: STORAGE_KEYS
 };
 
