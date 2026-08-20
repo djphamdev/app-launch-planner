@@ -304,6 +304,30 @@ AppLaunch.storage.importAll(backup);
 }
 ```
 
+### Cursor Sync Workflow
+To keep local Cursor edits, Hermes updates, and live site in sync:
+
+```bash
+# Before starting work in Cursor:
+git pull origin main
+
+# After making changes in Cursor:
+git add -A
+git commit -m "Describe changes"
+git push origin main
+# → Auto-deploys to https://djphamdev.github.io/app-launch-planner/
+
+# If Hermes made changes while you were editing:
+git pull origin main --rebase
+# Resolve any conflicts, then push
+```
+
+**Key synchronization points:**
+- **Live URL**: Always `https://djphamdev.github.io/app-launch-planner/`
+- **Branch**: `main` (protected, auto-deploys on push)
+- **Core engine**: `app-core.js` — all pages load this, edit carefully
+- **Shared state**: All pages use `AppLaunch.storage` (localStorage/IndexedDB)
+
 ### Adding a New Calculator
 1. Add method to `BusinessCalculator` in `app-core.js`
 2. Create UI in new `.html` or add to `calculators.html`
